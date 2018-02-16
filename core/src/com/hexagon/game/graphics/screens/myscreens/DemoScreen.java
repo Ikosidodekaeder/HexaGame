@@ -8,7 +8,6 @@ import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.Logic.Systems.InterfaceSystem;
-import com.hexagon.game.Logic.Systems.TestSystem;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenType;
 
