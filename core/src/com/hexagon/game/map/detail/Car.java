@@ -186,16 +186,16 @@ public class Car {
         Tile tile = path.get(i).tile;
         TileLocation destination = path.get(i).location;
 
-        boolean collided = false;
+        CollisionType collided = CollisionType.NONE;
         if (ignoreCollision > 0) {
             ignoreCollision -= delta;
         }
         if (ignoreCollision < 1.0f) {
             collided = isCollided(tile);
-            if (!collided && i < path.size() - 1) {
+            if (collided != CollisionType.STOP && i < path.size() - 1) {
                 collided = isCollided(path.get(i + 1).tile);
             }
-            if (collided) {
+            if (collided != CollisionType.STOP) {
                 ignoreCollision += delta + 0.01;
             }
         }
@@ -210,9 +210,13 @@ public class Car {
 
             float angle = (float) Math.toDegrees(Math.atan2(currentVector.getY(), currentVector.getX()));
 
-            if (collided) {
+            if (collided == CollisionType.STOP) {
                 if (velocity > 0) {
-                    velocity *= 0;
+                    velocity *= 0.2;
+                }
+            } else if (collided == CollisionType.CLOSE) {
+                if (velocity > MAX_SPEED*0.2) {
+                    velocity *= 0.7;
                 }
             } else {
                 if (velocity <= MAX_SPEED) {
@@ -289,10 +293,13 @@ public class Car {
     }
 
     private final TileLocation tmpLoc = new TileLocation(0, 0);
-    public boolean isCollided(Tile tile) {
+    private final TileLocation tmpLoc2 = new TileLocation(0, 0);
+    public CollisionType isCollided(Tile tile) {
 
-        tmpLoc.setX(this.currentLocation.getX() + direction.getX()*0.25);
-        tmpLoc.setY(this.currentLocation.getY() + direction.getY()*0.25);
+        tmpLoc.setX(this.currentLocation.getX() + direction.getX()*0.18);
+        tmpLoc.setY(this.currentLocation.getY() + direction.getY()*0.18);
+        tmpLoc2.setX(this.currentLocation.getX() + direction.getX()*0.35);
+        tmpLoc2.setY(this.currentLocation.getY() + direction.getY()*0.35);
 
         collisionCars.clear();
         collisionCars.addAll(tile.getCars());
@@ -305,7 +312,7 @@ public class Car {
                 continue;
             }
             double distance = otherCar.getCurrentLocation().distanceSquared(tmpLoc);
-            if (distance <= 0.1*0.1) {
+            if (distance <= 0.12*0.12) {
                 /*HexVector vector = new HexVector(
                         otherCar.getCurrentLocation().getX() - this.currentLocation.getX(),
                         otherCar.getCurrentLocation().getY() - this.currentLocation.getY()
@@ -313,13 +320,18 @@ public class Car {
                 // Only collide with cars that come from the right
                 //if (vector.getX() > 0.1) {
                 //if (this.id > otherCar.getId()) {
-                    return true;
+                    return CollisionType.STOP;
                 //}
                 //ignoreCollision = 2.0f;
                 //}
+            } else {
+                double distance2 = otherCar.getCurrentLocation().distanceSquared(tmpLoc2);
+                if (distance2 <= 0.22*0.22) {
+                    return CollisionType.CLOSE;
+                }
             }
         }
-        return false;
+        return CollisionType.NONE;
     }
 
     public ModelInstance getInstance() {
@@ -336,6 +348,12 @@ public class Car {
 
     private static int nextId() {
         return uid++;
+    }
+
+    private enum CollisionType {
+        STOP,
+        CLOSE,
+        NONE;
     }
 
 }
