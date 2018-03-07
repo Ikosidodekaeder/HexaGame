@@ -46,7 +46,6 @@ import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
@@ -87,11 +86,13 @@ public class ScreenGame extends HexagonScreen {
     private ModelBatch              shadowBatch;
 
     private HexMap      currentMap;
-    private float       mapLength;
+    public  float       mapWidth;
+    public  float       mapHeight;
 
     //Map<RenderTile>                  modelInstanceMap = new HashMap<>();
     List<ModelInstance>             debugModels = new ArrayList<>();
     ModelInstance                   hoverInstance;
+    float                           hoverRotation = 0;
     private boolean                 selectedGrow = true;
     AnimationController             animationController;
     Model                           selectedModel;
@@ -163,6 +164,7 @@ public class ScreenGame extends HexagonScreen {
 
     }
 
+    @SuppressWarnings("deprecation")
     private void setupEnvironment(ColorAttribute attr, DirectionalLight light, DirectionalShadowLight shadow){
         shadowLight = shadow;
         environment = new Environment();
@@ -177,7 +179,8 @@ public class ScreenGame extends HexagonScreen {
             return;
         }
         currentMap = hexMap;
-        mapLength = (float) (currentMap.getTiles().length*0.75f * HexagonUtil.hexagon.getSideLengthX()*2f);
+        mapWidth = (float) (currentMap.getTiles().length*0.75f * HexagonUtil.hexagon.getSideLengthX()*2f);
+        mapHeight = (float) (currentMap.getTiles()[0].length * HexagonUtil.hexagon.getSideLengthY()*2f);
 
         modelCache = new ModelCache();
         modelCache.begin();
@@ -310,32 +313,57 @@ public class ScreenGame extends HexagonScreen {
             modelBatch.render(debug, environment);
         }
 
-        for (int i=0; i<cars.size(); i++) {
+        /*for (int i=0; i<cars.size(); i++) {
             Car car = cars.get(i);
             car.update(0.0016f);
             modelBatch.render(car.getInstance(), environment);
-        }
+        }*/
+
+
+        //Matrix4 m = hoverInstance.transform.translate(hoverInstance.transform.getTranslation(Vector3.Zero));
 
         if (hoverInstance.transform.getScaleX() > 1.05f) {
             selectedGrow = false;
         } else if (hoverInstance.transform.getScaleX() < 0.95f) {
             selectedGrow = true;
         }
+
+        Vector3 hoverCurrentPos = hoverInstance.transform.getTranslation(Vector3.Zero);
+        float scaleX = hoverInstance.transform.getScaleX();
+        float scaleZ = hoverInstance.transform.getScaleZ();
+        float x = (inputGame.hoverLocation.x + hoverCurrentPos.x)/2;
+        float z = (inputGame.hoverLocation.z + hoverCurrentPos.z)/2;
+        hoverCurrentPos.x = x;
+        hoverCurrentPos.y = 0.1f;
+        hoverCurrentPos.z = z;
         if (selectedGrow) {
-            float x = hoverInstance.transform.getScaleX();
-            float z = hoverInstance.transform.getScaleZ();
-            hoverInstance.transform.setToTranslationAndScaling(
-                    hoverInstance.transform.getTranslation(Vector3.Zero),
-                    new Vector3(x + 0.0025f, 1, z + 0.0025f)
-            );
+            scaleX += 0.0025f;
+            scaleZ += 0.0025f;
         } else {
-            float x = hoverInstance.transform.getScaleX();
-            float z = hoverInstance.transform.getScaleZ();
-            hoverInstance.transform.setToTranslationAndScaling(
-                    hoverInstance.transform.getTranslation(Vector3.Zero),
-                    new Vector3(x - 0.0025f, 1, z - 0.0025f)
-            );
+            scaleX -= 0.0025f;
+            scaleZ -= 0.0025f;
         }
+        hoverInstance.transform.setToTranslationAndScaling(
+                hoverCurrentPos,
+                new Vector3(scaleX, 1, scaleZ)
+        );
+
+        if (inputGame.selectedTile != null) {
+            hoverRotation = (hoverRotation + 0.5f)%360;
+            hoverInstance.transform.rotate(0, 1, 0, hoverRotation);
+        } else {
+            if (hoverRotation > 0.5) {
+                float toRemove = hoverRotation*0.1f;
+                if (toRemove > 7.5f) {
+                    toRemove = 7.5f;
+                }
+                hoverRotation -= toRemove;
+                hoverInstance.transform.rotate(0, 1, 0, hoverRotation);
+            } else {
+                hoverRotation = 0;
+            }
+        }
+
         modelBatch.render(hoverInstance, environment);
 
 
@@ -383,7 +411,6 @@ public class ScreenGame extends HexagonScreen {
     @Override
     public void create() {
         gameManager = GameManager.instance;
-
     }
 
     @SuppressWarnings("deprecation")
@@ -418,6 +445,7 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         GameManager.instance.messageUtil.add("Please select a city to begin...", 10_000, Color.GREEN);
+        GameManager.instance.messageUtil.actionBar("Please select a city to begin...", 10_000, Color.GREEN);
 
         if(gameManager.server.isHost())
             Logic.start();
@@ -437,7 +465,7 @@ public class ScreenGame extends HexagonScreen {
         renderShadow();
         renderModels(delta);
         renderUI();
-        //gameManager.getCurrentState().render();
+        gameManager.getCurrentState().render();
         renderDEBUGMETA();
 
 
@@ -451,14 +479,12 @@ public class ScreenGame extends HexagonScreen {
 
     @Override
     public void pause() {
-        if(gameManager.server.isHost())
-            ;//Logic.suspend();
+
     }
 
     @Override
     public void resume() {
-        if(gameManager.server.isHost())
-            ;//Logic.resume();
+
     }
 
     @Override

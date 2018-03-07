@@ -13,8 +13,8 @@ public class StateStartOfGame extends State{
     private GameManager         gameManager;
 
 
-    public StateStartOfGame(InputGame input){
-        super(StateType.START_OF_GAME);
+    public StateStartOfGame(InputGame input, GameManager gameManager){
+        super(StateType.START_OF_GAME, input, gameManager);
     }
 
     @Override

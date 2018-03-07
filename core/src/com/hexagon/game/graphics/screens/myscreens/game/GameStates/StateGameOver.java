@@ -13,8 +13,8 @@ public class StateGameOver extends State{
     private GameManager         gameManager;
 
 
-    public StateGameOver(InputGame input){
-        super(StateType.GAME_OVER);
+    public StateGameOver(InputGame input, GameManager gameManager){
+        super(StateType.GAME_OVER, input, gameManager);
 
     }
 

@@ -47,13 +47,11 @@ public class SidebarBuild extends Sidebar {
                     break;
             }
         } else {
-            System.out.println("Biome " + tile.getBiome().name());
             if (tile.getBiome() == Biome.PLAINS) {
                 addForestButton(p, stage);
                 addMine(p,stage);
             }
         }
-        System.out.println("Ordering all neatly");
         statusWindow.orderAllNeatly(1);
         statusWindow.updateElements();
     }

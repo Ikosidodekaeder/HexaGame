@@ -58,7 +58,7 @@ public class GameManager {
     GroupWindow             standardWindow;
     FadeWindow              spaceWindow;
 
-    SidebarBuild            sidebarBuildWindow;
+    public SidebarBuild     sidebarBuildWindow;
 
 
     public HexaServer       server;
@@ -68,7 +68,6 @@ public class GameManager {
 
         standardWindow = new GroupWindow(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),stage);
 
-        createStates();
     }
 
     /*
@@ -76,12 +75,16 @@ public class GameManager {
      */
 
     public void createStates() {
+        if (states != null) {
+            for (State state : states) {
+                state.hide();
+            }
+        }
         states = new ArrayList<>();
-        states.add(new StateStartOfGame(inputGame));
-        states.add(new StateMainGame(inputGame));
-        states.add(new StateCityView(inputGame));
-        states.add(new StateGameOver(inputGame));
-        System.out.println("_______ " + states.toString());
+        states.add(new StateStartOfGame(inputGame, this));
+        states.add(new StateMainGame(inputGame, this));
+        states.add(new StateCityView(inputGame, this));
+        states.add(new StateGameOver(inputGame, this));
     }
 
     public void setCurrentState(StateType type) {
@@ -116,6 +119,9 @@ public class GameManager {
             messageUtil.removeAll();
         }
         this.messageUtil = new MessageUtil(stage, windowManager);
+
+        createStates();
+
         setCurrentState(StateType.START_OF_GAME);
     }
 
@@ -219,17 +225,13 @@ public class GameManager {
     }
 
     public void createStatusbar() {
-        StatusBar statusBar = new StatusBar(stage,standardWindow);
-        SidebarBuild sidebar = new SidebarBuild(standardWindow, stage);
+        StatusBar statusBar = new StatusBar(stage, standardWindow);
         TileInfoField tileInfoField = new TileInfoField(standardWindow,stage);
 
-        sidebar.statusWindow.show(stage);
         tileInfoField.StatusWindow.show(stage);
 
         statusBar.MainMenu.MenuContent.hide(stage);
         windowManager.addWindow(standardWindow);
-
-        sidebarBuildWindow = sidebar;
     }
 
 
@@ -261,5 +263,9 @@ public class GameManager {
 
     public void setPlayerResources(Map<String, Integer> playerResources) {
         PlayerResources = playerResources;
+    }
+
+    public GroupWindow getStandardWindow() {
+        return standardWindow;
     }
 }

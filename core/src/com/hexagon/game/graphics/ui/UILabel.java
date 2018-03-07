@@ -75,7 +75,7 @@ public class UILabel extends UiElement {
             return;
         }
         renderer.setColor(background);
-        renderer.rect(getLabel().getX(), getLabel().getY(), width, height);
+        renderer.rect(getLabel().getX()-2, getLabel().getY()+2, width+8, height+4);
     }
 
 
@@ -114,5 +114,13 @@ public class UILabel extends UiElement {
     public void setDisplayY(float y) {
         super.setDisplayX(y);
         Label.setY(y);
+    }
+
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+
+    public Color getBackground() {
+        return background;
     }
 }

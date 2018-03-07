@@ -1,5 +1,11 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
+import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.Point;
+
 /**
  * Created by Johannes on 06.03.2018.
  */
@@ -7,9 +13,13 @@ package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 public abstract class State {
 
     private StateType stateType;
+    private InputGame input;
+    private GameManager gameManager;
 
-    public State(StateType stateType) {
+    public State(StateType stateType, InputGame input, GameManager gameManager) {
         this.stateType = stateType;
+        this.input = input;
+        this.gameManager = gameManager;
     }
 
     public abstract void render();
@@ -17,6 +27,14 @@ public abstract class State {
 
     public abstract void show();
     public abstract void hide();
+
+    public void select(HexMap map, Point p, Stage stage) {
+
+    }
+
+    public void deselect(Stage stage) {
+
+    }
 
     public StateType getStateType() {
         return stateType;

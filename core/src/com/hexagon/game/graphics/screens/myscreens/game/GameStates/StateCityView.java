@@ -13,8 +13,8 @@ public class StateCityView extends State{
     private GameManager         gameManager;
 
 
-    public StateCityView(InputGame input){
-        super(StateType.CITY_VIEW);
+    public StateCityView(InputGame input, GameManager gameManager){
+        super(StateType.CITY_VIEW, input, gameManager);
 
     }
 

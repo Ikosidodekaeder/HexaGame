@@ -3,19 +3,18 @@ package com.hexagon.game.graphics.screens.myscreens.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.State;
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.Sidebar;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
-import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
-import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.HexagonUtil;
 
@@ -44,7 +43,9 @@ public class InputGame extends HexInput {
 
     private ScreenGame      screenGame;
 
-    private Point           selectedTile;
+    public Point            selectedTile;
+
+    public Vector3          hoverLocation = new Vector3(0, 0, 0);
 
     public InputGame(ScreenGame screenGame) {
         this.screenGame     = screenGame;
@@ -86,6 +87,7 @@ public class InputGame extends HexInput {
         }
         if (keycode == Input.Keys.ENTER) {
             GameManager.instance.messageUtil.add("Halllllllooo " + ((int) (Math.random() * 150_000)));
+            GameManager.instance.messageUtil.actionBar("Halllllllooo " + ((int) (Math.random() * 150_000)), 4000, Color.RED);
         }
         if (keycode == Input.Keys.P) {
 
@@ -216,12 +218,12 @@ public class InputGame extends HexInput {
                     maxZoom = true;
                 }
                 y = 2.0f;
-            } else if (y > 12.0f) {
+            } else if (y > 11.0f) {
                 if (!maxZoom) {
                     screenGame.getCamera().position.z += zoom;
                     maxZoom = true;
                 }
-                y = 12.0f;
+                y = 11.0f;
             } else {
                 maxZoom = false;
                 screenGame.getCamera().position.z += zoom;
@@ -240,6 +242,16 @@ public class InputGame extends HexInput {
         updateSelected(Gdx.input.getX(), Gdx.input.getY());
         Camera camera = screenGame.getCamera();
         camera.position.add(velX * delta, 0, velY * delta);
+        if (camera.position.x < 0) {
+            camera.position.x = 0;
+        } else if (camera.position.x > screenGame.mapWidth) {
+            camera.position.x = screenGame.mapWidth;
+        }
+        if (camera.position.z < 0) {
+            camera.position.z = 0;
+        } else if (camera.position.z > screenGame.mapHeight) {
+            camera.position.z = screenGame.mapHeight;
+        }
 
         camera.update();
 
@@ -305,7 +317,8 @@ public class InputGame extends HexInput {
             return selectedTile;
         }
         pos.y += 0.02f;
-        screenGame.hoverInstance.transform.setTranslation(pos);
+        //screenGame.hoverInstance.transform.setTranslation(pos);
+        hoverLocation.set(pos.x, pos.y, pos.z);
         return p;
         //System.out.println((Math.abs(pos.x) + 1) + ", " + (pos.z + 1) + " ---> " + p.getX() + ", " + p.getY());
 
@@ -338,20 +351,27 @@ public class InputGame extends HexInput {
             return;
         }
         selectedTile = p;
-        Sidebar window = screenGame.gameManager.sidebarBuildWindow;
-        window.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+        //Sidebar window = screenGame.gameManager.sidebarBuildWindow;
 
-        GameManager.instance.server.send(new PacketBuild(
+
+        State currentState = GameManager.instance.getCurrentState();
+
+        currentState.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+
+        //window.select(screenGame.getCurrentMap(), p, screenGame.getStage());
+
+        /*GameManager.instance.server.send(new PacketBuild(
                 p,
                 StructureType.ORE,
                 HexaServer.senderId
-        ));
+        ));*/
     }
 
     public void deselect() {
         selectedTile = null;
-        Sidebar window = screenGame.gameManager.sidebarBuildWindow;
-        window.deselect(screenGame.getStage());
+
+        State currentState = GameManager.instance.getCurrentState();
+        currentState.deselect(screenGame.getStage());
     }
 
     /**

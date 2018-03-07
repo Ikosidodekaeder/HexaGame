@@ -63,6 +63,7 @@ public class AnimationWindow extends DropdownWindow {
     @Override
     public void render(ShapeRenderer renderer) {
         super.render(renderer);
+
         if (isVisible() && !retracting) {
             if (pos >= 1.0f) {
                 return;
