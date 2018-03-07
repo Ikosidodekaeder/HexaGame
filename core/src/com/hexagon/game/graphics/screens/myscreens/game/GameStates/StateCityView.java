@@ -7,10 +7,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
  * Created by Johannes on 06.03.2018.
  */
 
-public class StateCityView extends State{
-
-    private InputGame           input;
-    private GameManager         gameManager;
+public class StateCityView extends State {
 
 
     public StateCityView(InputGame input, GameManager gameManager){

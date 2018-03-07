@@ -7,10 +7,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
  * Created by Johannes on 06.03.2018.
  */
 
-public class StateGameOver extends State{
-
-    private InputGame           input;
-    private GameManager         gameManager;
+public class StateGameOver extends State {
 
 
     public StateGameOver(InputGame input, GameManager gameManager){

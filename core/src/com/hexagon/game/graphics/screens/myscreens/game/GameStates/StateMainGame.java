@@ -8,6 +8,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.util.ConsoleColours;
 
 /**
  * Created by Johannes on 06.03.2018.
@@ -22,6 +23,7 @@ public class StateMainGame extends State{
         super(StateType.MAIN_GAME, input, gameManager);
 
         groupWindow = new GroupWindow(0,0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight(), gameManager.getStage());
+        gameManager.getGame().getWindowManager().addWindow(groupWindow);
 
         Stage stage = gameManager.getStage();
 
@@ -36,6 +38,7 @@ public class StateMainGame extends State{
     @Override
     public void select(HexMap map, Point p, Stage stage) {
         //Tile tile = map.getTileAt(p);
+        ConsoleColours.Print(ConsoleColours.RED, "HALLO");
         sidebarBuildWindow.select(map, p, stage);
     }
 

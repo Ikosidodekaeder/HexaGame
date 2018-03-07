@@ -12,9 +12,9 @@ import com.hexagon.game.map.Point;
 
 public abstract class State {
 
-    private StateType stateType;
-    private InputGame input;
-    private GameManager gameManager;
+    StateType stateType;
+    InputGame input;
+    GameManager gameManager;
 
     public State(StateType stateType, InputGame input, GameManager gameManager) {
         this.stateType = stateType;

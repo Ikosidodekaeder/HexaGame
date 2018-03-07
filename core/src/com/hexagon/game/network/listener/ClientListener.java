@@ -9,6 +9,7 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
@@ -129,14 +130,14 @@ public class ClientListener extends PacketListener {
                 public void invoke(Object... args) throws Exception {
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received BUILD" + HexaServer.WhatAmI(server));
 
-                    PacketBuild build = (PacketBuild) args[0];
-                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND," Received BUILD " + build.getArrayPosition().getX() + ", " + build.getArrayPosition().getY()
-                            + " -> " + build.getStructureType().name() + HexaServer.WhatAmI(server));
+                    PacketBuild packetBuild = (PacketBuild) args[0];
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND," Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
+                            + " -> " + packetBuild.getStructureType().name() + HexaServer.WhatAmI(server));
 
-                    if(server.isHost() && build.getStructureType() == StructureType.ORE)
+                    if(server.isHost() && packetBuild.getStructureType() == StructureType.ORE)
                     {
-                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received Build Packet for: " + build.getOwner() + "|| I am: "+HexaServer.senderId + HexaServer.WhatAmI(server));
-                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"    Build structure: " + build.getStructureType() + " at " + build.getArrayPosition());
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received Build Packet for: " + packetBuild.getOwner() + "|| I am: "+HexaServer.senderId + HexaServer.WhatAmI(server));
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"    Build structure: " + packetBuild.getStructureType() + " at " + packetBuild.getArrayPosition());
 
 
 
@@ -144,7 +145,7 @@ public class ClientListener extends PacketListener {
                                 Engine.getInstance().BroadcastMessage(
                                         new NotificationNewEntity(
                                                 Engine.getInstance().getEntityManager().createID(
-                                                        new HexaComponentOwner(build.getOwner().toString(),build.getOwner()),
+                                                        new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
                                                         new ComponentProducer(),
                                                         new ComponentResource(
                                                                 0.000002f,
@@ -163,10 +164,21 @@ public class ClientListener extends PacketListener {
                     }else
                         ;
 
-                    Point pos = build.getArrayPosition();
+                    Point pos = packetBuild.getArrayPosition();
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
-                    map.build(pos.getX(), pos.getY(), build.getStructureType(), build.getOwner());
+
+                    if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
+                        if (packetBuild.getOwner().equals(HexaServer.senderId)) {
+                            GameManager.instance.setCurrentState(StateType.MAIN_GAME);
+                            GameManager.instance.messageUtil.actionBar(
+                                    "Congratulations on your new City", 6000, Color.SKY);
+                            GameManager.instance.messageUtil.add(
+                                    "Congratulations on your new City",  6000, Color.SKY);
+                        }
+                    }
+
+                    map.build(pos.getX(), pos.getY(), packetBuild.getStructureType(), packetBuild.getOwner());
                     GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });
