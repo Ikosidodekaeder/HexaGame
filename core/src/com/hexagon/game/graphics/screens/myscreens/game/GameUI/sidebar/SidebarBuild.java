@@ -36,11 +36,14 @@ public class SidebarBuild extends Sidebar {
         if (tile.getStructure() != null) {
             Structure structure = tile.getStructure();
             switch (structure.getType()) {
-                case FOREST:
-                    destroyForestButton(p, stage);
-                    break;
                 case ORE:
                     destroyMine(p,stage);
+                    break;
+                case FORESTRY:
+                    destroyForestryButton(p,stage);
+                    break;
+                case QUARRY:
+                    destroyQuarry(p,stage);
                     break;
                 case CITY:
                     // TODO: Open City Information Window
@@ -48,9 +51,19 @@ public class SidebarBuild extends Sidebar {
                     break;
             }
         } else {
-            if (tile.getBiome() == Biome.PLAINS) {
-                addForestButton(p, stage);
-                addMine(p,stage);
+            switch (tile.getBiome()){
+                case PLAINS:{
+                    addForestryButton(p, stage);
+                    addQuarry(p,stage);
+                    addMine(p,stage);
+                }break;
+                case DESERT:{
+
+                }break;
+                case ICE:{
+
+                }break;
+
             }
         }
         ConsoleColours.Print(ConsoleColours.RED, "hululululu");
@@ -58,8 +71,8 @@ public class SidebarBuild extends Sidebar {
         statusWindow.updateElements();
     }
 
-    private void destroyForestButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Remove Forest", 5, 0, 50, 0, 26);
+    private void destroyForestryButton(final Point p, final Stage stage) {
+        UiButton buttonForest = new UiButton("Remove Forestry", 5, 0, 50, 0, 26);
         buttonForest.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -73,13 +86,13 @@ public class SidebarBuild extends Sidebar {
 
     }
 
-    private void addForestButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Add Forest", 5, -50, 50, 0, 26);
+    private void addForestryButton(final Point p, final Stage stage) {
+        UiButton buttonForest = new UiButton("Add Forestrys", 5, 0, 50, 0, 26);
         buttonForest.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 GameManager.instance.server.send(
-                        new PacketBuild(p, StructureType.FOREST, HexaServer.senderId)
+                        new PacketBuild(p, StructureType.FORESTRY, HexaServer.senderId)
                 );
 
                 select(GameManager.instance.getGame().getCurrentMap(), p, stage);
@@ -117,4 +130,36 @@ public class SidebarBuild extends Sidebar {
         });
         statusWindow.add(Mine, stage);
     }
+
+
+    private void destroyQuarry(final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Remove Quarry", 5, 0, 50, 0, 26);
+        Mine.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketDestroy(p)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+            }
+        });
+        statusWindow.add(Mine, stage);
+
+    }
+
+    private void addQuarry(final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Add Quarry", 5, 0, 50, 0, 26);
+        Mine.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketBuild(p, StructureType.QUARRY, HexaServer.senderId)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+
+            }
+        });
+        statusWindow.add(Mine, stage);
+    }
+
 }

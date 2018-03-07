@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.Logic.Components.HexaComponentOre;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
+import com.hexagon.game.Logic.Components.HexaComponentStone;
+import com.hexagon.game.Logic.Components.HexaComponentWood;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
@@ -142,24 +144,70 @@ public class ClientListener extends PacketListener {
 
 
                         synchronized (lock){
-                                Engine.getInstance().BroadcastMessage(
-                                        new NotificationNewEntity(
-                                                Engine.getInstance().getEntityManager().createID(
-                                                        new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
-                                                        new ComponentProducer(),
-                                                        new ComponentResource(
-                                                                0.000002f,
-                                                                1.0f,
-                                                                1.0f,
-                                                                asList(
-                                                                        new Component[]  {
-                                                                                new HexaComponentOre()
-                                                                        }
-                                                                )
-                                                        )
-                                                )
-                                        )
-                            );
+                            switch (packetBuild.getStructureType()){
+                                case MINE:
+                                    {
+                                    Engine.getInstance().BroadcastMessage(
+                                            new NotificationNewEntity(
+                                                    Engine.getInstance().getEntityManager().createID(
+                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new ComponentProducer(),
+                                                            new ComponentResource(
+                                                                    0.000002f,
+                                                                    1.0f,
+                                                                    1.0f,
+                                                                    asList(
+                                                                            new Component[]  {
+                                                                                    new HexaComponentOre()
+                                                                            }
+                                                                    )
+                                                            )
+                                                    )
+                                            )
+                                    );
+                                }break;
+                                case FORESTRY:{
+                                    Engine.getInstance().BroadcastMessage(
+                                            new NotificationNewEntity(
+                                                    Engine.getInstance().getEntityManager().createID(
+                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new ComponentProducer(),
+                                                            new ComponentResource(
+                                                                    0.000002f,
+                                                                    1.0f,
+                                                                    1.0f,
+                                                                    asList(
+                                                                            new Component[]  {
+                                                                                    new HexaComponentWood()
+                                                                            }
+                                                                    )
+                                                            )
+                                                    )
+                                            )
+                                    );
+                                }break;
+                                case QUARRY:{
+                                    Engine.getInstance().BroadcastMessage(
+                                            new NotificationNewEntity(
+                                                    Engine.getInstance().getEntityManager().createID(
+                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new ComponentProducer(),
+                                                            new ComponentResource(
+                                                                    0.000002f,
+                                                                    1.0f,
+                                                                    1.0f,
+                                                                    asList(
+                                                                            new Component[]  {
+                                                                                    new HexaComponentStone()
+                                                                            }
+                                                                    )
+                                                            )
+                                                    )
+                                            )
+                                    );
+                                }break;
+                            }
+
                         }
                     }else
                         ;

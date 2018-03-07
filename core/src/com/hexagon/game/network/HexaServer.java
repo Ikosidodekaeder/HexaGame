@@ -292,7 +292,8 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected() && isHost()) {
-            if(System.currentTimeMillis() - lastPlayerupdate >= 1_00){
+            if(System.currentTimeMillis() - lastPlayerupdate >= 2000){
+                lastPlayerupdate = System.currentTimeMillis();
                 if (getSessionData() != null && isHost()) {
                     for (UUID id : getSessionData().PlayerList.keySet()) {
                         broadcastPlayerStatus(id);
