@@ -335,7 +335,8 @@ public class ClientListener extends PacketListener {
                     }
                     MapManager.getInstance().setCurrentHexMap(hexMap);
 
-                    if (!GameManager.instance.server.isHost()) {
+                    if (!GameManager.instance.server.isHost()
+                            || GameManager.instance.server.isOfflineGame()) {
                         GameManager.instance.server.send(new PacketPlayerLoaded());
                     }
 

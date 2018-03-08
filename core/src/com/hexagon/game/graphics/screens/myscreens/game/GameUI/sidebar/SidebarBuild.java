@@ -10,7 +10,6 @@ import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureType;
-import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
@@ -34,7 +33,7 @@ public class SidebarBuild extends Sidebar {
 
         Tile tile = map.getTileAt(p.getX(), p.getY());
         if (tile.getStructure() != null) {
-            Structure structure = tile.getStructure();
+            Structure structure = (Structure) tile.getStructure();
             switch (structure.getType()) {
                 case ORE:
                     destroyMine(p,stage);

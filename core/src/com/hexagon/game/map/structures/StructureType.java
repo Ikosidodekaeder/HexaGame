@@ -10,7 +10,7 @@ public enum StructureType {
     CITY(new String[]{"city_lvl1.g3db", "city_lvl2.g3db", "city_lvl3.g3db", "city_lvl4.g3db", "city_lvl5.g3db"}),
     STREET(new String[]{"street.g3db"}),
     RESOURCE(null),
-    ORE(null),
+    ORE(new String[]{"mountain_without_mine.g3db"}),
     MINE(new String[]{"mine.g3db"}),
     FORESTRY(new String[]{"mine.g3db"}),
     QUARRY(new String[]{"mine.g3db"}),

@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.structures.Structure;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
+import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
@@ -155,17 +157,19 @@ public class HexMap {
             }*/
 
         } else if (type == StructureType.ORE) {
-            //StructureResource resource = (StructureResource) tile.getStructure();
-            HexModel model = new HexModel(new ModelInstance(GameManager.instance.getGame().box));
-            model.move((float) loc.getX() + 0.5f, 0.3f, (float) loc.getY() - 0.2f);
+            StructureResource resource = (StructureResource) tile.getStructure();
+            HexModel model = new HexModel(new ModelInstance(
+                    ModelManager.getInstance().getStructureModels().get(StructureType.ORE).get(0)
+            ));
+            model.move((float) loc.getX(), 0.01f, (float) loc.getY());
             renderTile.getStructures().add(model);
         } else if (type == StructureType.CITY) {
-            //StructureCity structureCity = (StructureCity) tile.getStructure();
+            StructureCity structureCity = (StructureCity) tile.getStructure();
             HexModel model = new HexModel(
                     new ModelInstance(
                             ModelManager.getInstance()
                             .getStructureModels(type)
-                            .get(/*structureCity.getLevel()*/3)
+                            .get(structureCity.getLevel())
                     )
             );
             model.move((float) loc.getX(), 0.05f, (float) loc.getY());

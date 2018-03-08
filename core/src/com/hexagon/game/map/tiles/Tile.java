@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
+import com.hexagon.game.map.structures.IStructure;
 import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.util.HexagonUtil;
@@ -26,7 +27,7 @@ public class Tile {
     private int             arrayY;
 
     private Biome           biome = Biome.ICE;
-    private Structure       structure;
+    private IStructure      structure;
 
     private transient List<Car>       cars = new ArrayList<>();
 
@@ -61,7 +62,7 @@ public class Tile {
         this.biome = biome;
     }
 
-    public Structure getStructure() {
+    public IStructure getStructure() {
         return structure;
     }
 
