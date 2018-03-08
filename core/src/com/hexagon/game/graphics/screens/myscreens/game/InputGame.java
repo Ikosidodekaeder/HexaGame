@@ -8,11 +8,13 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.State;
-import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.Sidebar;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.input.HexInput;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
+import com.hexagon.game.map.structures.StructureCity;
+import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.util.CameraHelper;
@@ -26,7 +28,7 @@ public class InputGame extends HexInput {
 
     private static float    SPEED = 5;
 
-    private CameraHelper    cameraHelper;
+    public CameraHelper    cameraHelper;
 
     private float           velX = 0;
     private float           velY = 0;
@@ -39,7 +41,7 @@ public class InputGame extends HexInput {
     private Material        selectionMaterial;
     private Array<Material> originalMaterial;*/
 
-    private Vector3         cameraLockOnTile = null;
+    public Vector3         cameraLockOnTile = null;
 
     private ScreenGame      screenGame;
 
@@ -310,9 +312,19 @@ public class InputGame extends HexInput {
 
     public Point hover(HexModel model) {
 
+        if (screenGame.gameManager.getCurrentState().getStateType() == StateType.CITY_VIEW) return null;
+
         Vector3 pos = model.getModelInstance().transform.getTranslation(Vector3.Zero);
 
         Point p = HexagonUtil.getArrayLocation(new TileLocation(Math.abs(pos.x) + 1, pos.z + 1));
+        Tile tile = screenGame.getCurrentMap().getTileAt(p);
+        if (tile.getStructure() != null
+                && tile.getStructure() instanceof StructureCity) {
+            StructureCity city = (StructureCity) tile.getStructure();
+            Color color = Color.WHITE;
+            screenGame.gameManager.messageUtil.actionBar(city.getName(), 5000, color);
+        }
+
         if (selectedTile != null) {
             return selectedTile;
         }
@@ -347,9 +359,13 @@ public class InputGame extends HexInput {
     }
 
     public void select(Point p) {
+        if (screenGame.gameManager.getCurrentState().getStateType() == StateType.CITY_VIEW) return;
+        if (p == null) return;
+
         if (p.equals(selectedTile)) {
             return;
         }
+
         selectedTile = p;
         //Sidebar window = screenGame.gameManager.sidebarBuildWindow;
 
@@ -368,6 +384,7 @@ public class InputGame extends HexInput {
     }
 
     public void deselect() {
+        if (screenGame.gameManager.getCurrentState().getStateType() == StateType.CITY_VIEW) return;
         selectedTile = null;
 
         State currentState = GameManager.instance.getCurrentState();

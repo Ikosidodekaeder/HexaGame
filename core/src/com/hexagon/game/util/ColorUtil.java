@@ -12,7 +12,7 @@ public class ColorUtil {
             Color.ORANGE,
             Color.BLUE,
             Color.GREEN,
-            Color.DARK_GRAY,
+            Color.RED,
             Color.WHITE,
             Color.SKY
     };

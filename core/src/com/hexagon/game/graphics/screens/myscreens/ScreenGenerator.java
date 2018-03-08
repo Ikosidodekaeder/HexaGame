@@ -24,6 +24,7 @@ import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketMapUpdate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,38 @@ public class ScreenGenerator extends HexagonScreen {
 
     public ScreenGenerator() {
         super(ScreenType.GENERATOR);
+    }
+
+    private List<String> cityNames = new ArrayList<>();
+    private int multipleCityNames = -1;
+
+    private String getRandomCityName(List<Tile> generatedTiles, Random random) {
+        if (cityNames.isEmpty()) {
+            System.out.println("____ " + Arrays.toString(StructureCity.names));
+            cityNames.addAll(Arrays.asList(StructureCity.names));
+            System.out.println(cityNames);
+            multipleCityNames++;
+        }
+        int i = 0;
+        if (cityNames.size() > 1) {
+            i = random.nextInt(cityNames.size() - 1);
+        }
+        String name = cityNames.get(i);
+        cityNames.remove(name);
+        if (multipleCityNames == 0) {
+            return name;
+        }
+
+        for (Tile existingTile : generatedTiles) {
+            if (existingTile.getStructure() != null
+                    && existingTile.getStructure() instanceof StructureCity) {
+                StructureCity existingCity = (StructureCity) existingTile.getStructure();
+                if (existingCity.getName().equals(name)) {
+                    return name + " " + (multipleCityNames + 1);
+                }
+            }
+        }
+        return name;
     }
 
     private List<TileGenerator> setupBiomeGenerator(final MapGenerator mapGenerator){
@@ -123,6 +156,8 @@ public class ScreenGenerator extends HexagonScreen {
             }
         });
 
+
+
         // City Generator
         generators.add(new TileGenerator() {
             @Override
@@ -145,7 +180,10 @@ public class ScreenGenerator extends HexagonScreen {
                     }
                 }
                 if (random.nextInt(100) <= 30) {
-                    tile.setStructure(new StructureCity(0));
+                    StructureCity newCity = new StructureCity();
+                    newCity.setName(getRandomCityName(generatedTiles, random));
+                    tile.setStructure(newCity);
+
                 }
                 return tile;
             }

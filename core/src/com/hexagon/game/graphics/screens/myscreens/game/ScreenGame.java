@@ -387,6 +387,7 @@ public class ScreenGame extends HexagonScreen {
         Gdx.gl.glEnable(GL20.GL_BLEND); // allows transparent drawing
         shapeRenderer.begin();
         windowManager.render(shapeRenderer);
+        gameManager.getCurrentState().render(shapeRenderer);
         shapeRenderer.end();
     }
 
@@ -427,11 +428,13 @@ public class ScreenGame extends HexagonScreen {
     @Override
     public void show() {
         super.show();
-        inputGame = new InputGame(this);
-        InputManager.getInstance().register(inputGame);
 
         setupModels();
         setupCamera(new Point(0,6,0),new Point(0,0, -3),67,1,300);
+
+        inputGame = new InputGame(this);
+        InputManager.getInstance().register(inputGame);
+
         setupEnvironment(
                 new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f),
                 new DirectionalLight().set(0.8f, 0.5f, 0.5f, 0f, -0.8f, -0.2f),
@@ -475,7 +478,6 @@ public class ScreenGame extends HexagonScreen {
         renderShadow();
         renderModels(delta);
         renderUI();
-        gameManager.getCurrentState().render();
         renderDEBUGMETA();
 
 

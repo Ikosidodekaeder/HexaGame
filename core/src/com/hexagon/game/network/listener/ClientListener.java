@@ -218,18 +218,20 @@ public class ClientListener extends PacketListener {
 
 
 
-                    if (packetBuild.getOwner().equals(HexaServer.senderId)) {
-                        if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
-                            GameManager.instance.setCurrentState(StateType.MAIN_GAME);
-                            GameManager.instance.messageUtil.actionBar(
-                                    "Congratulations on your new town", 7000, Color.SKY);
+                    if (packetBuild.getStructureType() == StructureType.CITY) {
+                        if (packetBuild.getOwner().equals(HexaServer.senderId)) {
+                            if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
+                                GameManager.instance.setCurrentState(StateType.MAIN_GAME);
+                                GameManager.instance.messageUtil.actionBar(
+                                        "Congratulations on your new town", 7000, Color.SKY);
+                                GameManager.instance.messageUtil.add(
+                                        "Congratulations on your new town", 7000, Color.SKY);
+                            }
+                        } else {
+                            Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
                             GameManager.instance.messageUtil.add(
-                                    "Congratulations on your new town", 7000, Color.SKY);
+                                    player.username + " has aquired a new town", 7000, player.color);
                         }
-                    } else {
-                        Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
-                        GameManager.instance.messageUtil.add(
-                                player.username + " has aquired a new town",  7000, player.color);
                     }
 
                     map.build(pos.getX(), pos.getY(), packetBuild.getStructureType(), packetBuild.getOwner());

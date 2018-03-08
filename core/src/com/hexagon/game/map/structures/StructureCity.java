@@ -6,6 +6,23 @@ package com.hexagon.game.map.structures;
 
 public class StructureCity extends Structure {
 
+    public static String[] names = new String[] {
+            "Nürnberg",
+            "Erlangen",
+            "Fürth",
+            "Schwabach",
+            "Frankfurt",
+            "Berlin",
+            "Augsburg",
+            "Ansbach",
+            "Stuttgart",
+            "Kiel",
+            "Magdeburg",
+            "Regensburg",
+            "Mühlhausen"
+    };
+
+    private String name;
     private int level = 0;
 
 
@@ -25,5 +42,13 @@ public class StructureCity extends Structure {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

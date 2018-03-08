@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
@@ -23,7 +24,7 @@ public class StateStartOfGame extends State{
     }
 
     @Override
-    public void render(){
+    public void render(ShapeRenderer renderer){
 
     }
 

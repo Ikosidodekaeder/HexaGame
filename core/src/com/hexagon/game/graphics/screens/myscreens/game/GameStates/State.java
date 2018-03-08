@@ -1,5 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
@@ -22,7 +23,7 @@ public abstract class State {
         this.gameManager = gameManager;
     }
 
-    public abstract void render();
+    public abstract void render(ShapeRenderer renderer);
     public abstract void logic();
 
     public abstract void show();

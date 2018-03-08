@@ -86,7 +86,6 @@ public class UILabel extends UiElement {
 
     @Override
     public void removeFromStage(Stage stage) {
-        System.out.println("Removing label " + Label.getText());
         stage.getActors().removeValue(this.Label, false);
     }
 
@@ -112,7 +111,7 @@ public class UILabel extends UiElement {
 
     @Override
     public void setDisplayY(float y) {
-        super.setDisplayX(y);
+        super.setDisplayY(y);
         Label.setY(y);
     }
 

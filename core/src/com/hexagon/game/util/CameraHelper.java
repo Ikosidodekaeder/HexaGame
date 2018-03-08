@@ -33,7 +33,7 @@ public class CameraHelper {
     }
 
     public float function(float x) {
-        return (float) (0.05 * -(Math.pow(x - 0.5, 2)) + 0.015);
+        return (float) (0.1 * -(Math.pow(x - 0.5, 2)) + 0.0252);
     }
 
     public void update() {
@@ -70,12 +70,19 @@ public class CameraHelper {
                 velocity = 0.1f * function(t);
             }*/
 
-            velocity = function(t) * 1.4f;
+            velocity = function(t) * 1.5f;
             /*if (t <= 0.7f && velocity < 0.01f) {
                 velocity = velocity * 1.3f + 0.005f;
             }*/
-            if (velocity > 0.015f) {
-                velocity = 0.015f;
+            if (unlock) {
+                velocity *= 1.5f;
+                if (velocity > 0.03f) {
+                    velocity = 0.03f;
+                }
+            } else {
+                if (velocity > 0.015f) {
+                    velocity = 0.015f;
+                }
             }
             System.out.println(t + " //// " + velocity);
         }

@@ -2,7 +2,6 @@ package com.hexagon.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -23,7 +22,6 @@ import de.svdragster.logica.system.System;
 import de.svdragster.logica.system.SystemMessageDelivery;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
-import sun.rmi.runtime.Log;
 
 
 public class Main extends Game {

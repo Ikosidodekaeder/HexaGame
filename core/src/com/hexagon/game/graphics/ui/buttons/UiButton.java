@@ -1,11 +1,13 @@
 package com.hexagon.game.graphics.ui.buttons;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.ui.UiElement;
+import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.FontManager;
 
 /**
@@ -16,6 +18,8 @@ public class UiButton extends UiElement {
 
     private TextButton textButton;
     private TextButton.TextButtonStyle style;
+    private GlyphLayout glyphLayout;
+    private BitmapFont font32;
 
     public UiButton(String text, float x, float y, float width, float height, int fontSize) {
         super(x, y, width, height);
@@ -23,7 +27,7 @@ public class UiButton extends UiElement {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(FontManager.handlePiximisa);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = fontSize;
-        BitmapFont font32 = generator.generateFont(parameter);
+        font32 = generator.generateFont(parameter);
         generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
         style = new TextButton.TextButtonStyle();
@@ -31,6 +35,11 @@ public class UiButton extends UiElement {
 
         if (height <= 0) {
             setHeight(font32.getLineHeight());
+        }
+        glyphLayout = new GlyphLayout();
+        if (width <= 0) {
+            glyphLayout.setText(font32, text);
+            setWidth(glyphLayout.width);
         }
 
         textButton = new TextButton(text, style);
@@ -92,5 +101,11 @@ public class UiButton extends UiElement {
 
     public float getFontHeight() {
         return textButton.getStyle().font.getLineHeight();
+    }
+
+    public void setText(String text) {
+        getTextButton().setText(text);
+        glyphLayout.setText(font32, text);
+        setWidth(glyphLayout.width);
     }
 }

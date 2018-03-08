@@ -1,5 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
 
@@ -16,7 +17,7 @@ public class StateGameOver extends State {
     }
 
     @Override
-    public void render(){
+    public void render(ShapeRenderer renderer){
 
     }
 

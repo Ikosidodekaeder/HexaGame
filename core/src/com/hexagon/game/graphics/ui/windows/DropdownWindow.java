@@ -24,7 +24,7 @@ public class DropdownWindow extends Window {
 
     public void orderAllNeatly() {
         if (defaultColumns == 0) {
-            return;
+            throw new RuntimeException("No default column amount set");
         }
         orderAllNeatly(defaultColumns);
     }
@@ -43,7 +43,7 @@ public class DropdownWindow extends Window {
             element.setY(getHeight() - (row + 1) * element.getHeight());
 
             element.setDisplayX(getX() + element.getX());
-            element.setDisplayY(getHeight() - getY() - element.getY() - element.getHeight()*4);
+            element.setDisplayY(getHeight() - getY() - element.getY() - element.getHeight());
 
             maxX = Math.max(maxX, element.getX());
         }
