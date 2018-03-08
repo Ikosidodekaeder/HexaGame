@@ -39,17 +39,11 @@ public class HexMapAdapter implements JsonSerializer<IStructure>, JsonDeserializ
 
     @Override
     public JsonElement serialize(IStructure structure, Type type, JsonSerializationContext context) {
-        System.out.println("Serializing " + structure.getClass().getName());
         JsonObject retValue = new JsonObject();
-        System.out.println("b");
         String className = structure.getClass().getName();
-        System.out.println("c");
         retValue.addProperty(CLASSNAME, className);
-        System.out.println("d");
         JsonElement elem = context.serialize(structure);
-        System.out.println("e");
         retValue.add(INSTANCE, elem);
-        System.out.println("Done serializing " + structure.getClass().getName());
         return retValue;
     }
 
