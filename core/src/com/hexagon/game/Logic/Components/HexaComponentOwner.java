@@ -15,6 +15,7 @@ import de.svdragster.logica.manager.Entity.Entity;
 public class HexaComponentOwner extends Component {
 
     public String   name;
+    public long     money = 0;
 
     public HexaComponentOwner(String Name){
         super.setType(HexaComponents.OWNER);

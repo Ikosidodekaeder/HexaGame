@@ -12,5 +12,7 @@ public enum HexaComponents implements ComponentType {
     TEST,
     WOOD,
     ORE,
-    STONE
+    STONE,
+    TRADE,
+    TRADEMONEY
 }

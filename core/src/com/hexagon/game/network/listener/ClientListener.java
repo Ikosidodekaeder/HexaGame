@@ -137,7 +137,7 @@ public class ClientListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND," Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
                             + " -> " + packetBuild.getStructureType().name() + HexaServer.WhatAmI(server));
 
-                    if(server.isHost() && packetBuild.getStructureType() == StructureType.ORE)
+                    if(server.isHost() && packetBuild.getStructureType() != StructureType.CITY)
                     {
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received Build Packet for: " + packetBuild.getOwner() + "|| I am: "+HexaServer.senderId + HexaServer.WhatAmI(server));
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"    Build structure: " + packetBuild.getStructureType() + " at " + packetBuild.getArrayPosition());
