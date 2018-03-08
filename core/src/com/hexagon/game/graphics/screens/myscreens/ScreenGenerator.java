@@ -20,6 +20,7 @@ import com.hexagon.game.map.structures.resources.ResourceType;
 import com.hexagon.game.map.structures.resources.StructureResource;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketMapUpdate;
 
 import java.util.ArrayList;
@@ -143,8 +144,8 @@ public class ScreenGenerator extends HexagonScreen {
                         return tile;
                     }
                 }
-                if (random.nextInt(100) <= 40) {
-                    tile.setStructure(new StructureCity(random.nextInt(5)));
+                if (random.nextInt(100) <= 30) {
+                    tile.setStructure(new StructureCity(0));
                 }
                 return tile;
             }
@@ -209,7 +210,7 @@ public class ScreenGenerator extends HexagonScreen {
          * Start creating the world
          */
 
-        final MapGenerator mapGenerator = new MapGenerator(20, 20, 3);
+        final MapGenerator mapGenerator = new MapGenerator(100, 100, 3);
         List<TileGenerator> Biomes = setupBiomeGenerator(mapGenerator);
         for(TileGenerator generator : Biomes)
             mapGenerator.getTileGeneratorList().add(generator);
@@ -227,13 +228,13 @@ public class ScreenGenerator extends HexagonScreen {
                 final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
                 hexMap.setTiles(mapGenerator.getGeneratedTiles());
 
-                Map<UUID, String> userColors = new HashMap<>();
+                Map<UUID, Player> players = new HashMap<>();
                 for (UUID uuid : GameManager.instance.server.getSessionData().PlayerList.keySet()) {
-                    userColors.put(uuid,
-                            GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond().toString());
+                    players.put(uuid,
+                            GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond());
                 }
 
-                JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles(), userColors);
+                JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles(), players);
                 PacketMapUpdate packetMapUpdate = new PacketMapUpdate(jsonHexMap.toJson());
                 System.out.println("sending mapupdate " + packetMapUpdate.getRawMapData());
 

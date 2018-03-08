@@ -13,7 +13,12 @@ public class Usernames {
             "RobertRasend",
             "PeterLustig",
             "GustavGans",
-            "HansHammer"
+            "HansHammer",
+            "JosephJosephus",
+            "GundulaGause",
+            "FriederikeFreak",
+            "AngeloMerkel",
+            "AlbertEinstein"
     };
 
     public static String getRandom() {

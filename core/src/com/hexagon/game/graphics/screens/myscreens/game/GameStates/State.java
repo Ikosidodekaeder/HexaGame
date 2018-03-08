@@ -39,4 +39,12 @@ public abstract class State {
     public StateType getStateType() {
         return stateType;
     }
+
+    public InputGame getInput() {
+        return input;
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
+    }
 }

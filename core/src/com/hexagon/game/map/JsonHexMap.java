@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hexagon.game.map.structures.IStructure;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.Player;
 
 import java.util.Map;
 import java.util.UUID;
@@ -15,11 +16,11 @@ import java.util.UUID;
 public class JsonHexMap {
 
     private Tile[][] tiles;
-    private Map<UUID, String> colors;
+    private Map<UUID, Player> players;
 
-    public JsonHexMap(Tile[][] tiles, Map<UUID, String> colors) {
+    public JsonHexMap(Tile[][] tiles, Map<UUID, Player> players) {
         this.tiles = tiles;
-        this.colors = colors;
+        this.players = players;
     }
 
     public Tile[][] getTiles() {
@@ -30,12 +31,12 @@ public class JsonHexMap {
         this.tiles = tiles;
     }
 
-    public Map<UUID, String> getColors() {
-        return colors;
+    public Map<UUID, Player> getPlayers() {
+        return players;
     }
 
-    public void setColors(Map<UUID, String> colors) {
-        this.colors = colors;
+    public void setPlayers(Map<UUID, Player> players) {
+        this.players = players;
     }
 
     public String toJson() {

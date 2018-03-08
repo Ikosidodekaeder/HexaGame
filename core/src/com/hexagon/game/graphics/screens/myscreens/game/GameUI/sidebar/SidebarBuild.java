@@ -1,5 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -14,7 +15,6 @@ import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
-import com.hexagon.game.util.ConsoleColours;
 
 /**
  * Created by Sven on 01.03.2018.
@@ -23,7 +23,7 @@ import com.hexagon.game.util.ConsoleColours;
 public class SidebarBuild extends Sidebar {
 
     public SidebarBuild(GroupWindow window, Stage stage) {
-        super(window, stage);
+        super(window, stage, Gdx.graphics.getHeight()/2+5, Gdx.graphics.getHeight()/2+5, Gdx.graphics.getHeight()/2-60);
     }
 
     @Override
@@ -65,7 +65,6 @@ public class SidebarBuild extends Sidebar {
 
             }
         }
-        ConsoleColours.Print(ConsoleColours.RED, "hululululu");
         statusWindow.orderAllNeatly(1);
         statusWindow.updateElements();
     }

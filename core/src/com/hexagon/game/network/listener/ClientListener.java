@@ -19,6 +19,7 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
 import com.hexagon.game.network.SessionData;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
@@ -216,14 +217,19 @@ public class ClientListener extends PacketListener {
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
 
 
-                    if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
-                        if (packetBuild.getOwner().equals(HexaServer.senderId)) {
+
+                    if (packetBuild.getOwner().equals(HexaServer.senderId)) {
+                        if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
                             GameManager.instance.setCurrentState(StateType.MAIN_GAME);
                             GameManager.instance.messageUtil.actionBar(
-                                    "Congratulations on your new City", 6000, Color.SKY);
+                                    "Congratulations on your new town", 7000, Color.SKY);
                             GameManager.instance.messageUtil.add(
-                                    "Congratulations on your new City",  6000, Color.SKY);
+                                    "Congratulations on your new town", 7000, Color.SKY);
                         }
+                    } else {
+                        Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
+                        GameManager.instance.messageUtil.add(
+                                player.username + " has aquired a new town",  7000, player.color);
                     }
 
                     map.build(pos.getX(), pos.getY(), packetBuild.getStructureType(), packetBuild.getOwner());
@@ -327,9 +333,10 @@ public class ClientListener extends PacketListener {
                             if (server.getSessionData() == null) {
                                 server.setSessionData(new SessionData());
                             }
-                            for (UUID uuid : jsonHexMap.getColors().keySet()) {
-                                server.getSessionData().addNewPlayer(uuid, "SomePlayer",
-                                        Color.valueOf(jsonHexMap.getColors().get(uuid)));
+                            for (UUID uuid : jsonHexMap.getPlayers().keySet()) {
+                                Player player = jsonHexMap.getPlayers().get(uuid);
+                                server.getSessionData().addNewPlayer(uuid, player.username,
+                                        new Player(player.color, player.username));
                             }
                         }
                     }

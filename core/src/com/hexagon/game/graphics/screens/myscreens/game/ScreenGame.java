@@ -24,7 +24,6 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.graphics.ModelManager;
@@ -194,11 +193,22 @@ public class ScreenGame extends HexagonScreen {
 
                 HexModel hexModel;
                 if (tile.getBiome() == Biome.WATER) {
-                    hexModel = new HexModelAnimated(new ModelInstance(biomeModelMap.get(tile.getBiome())), "Cylinder.001|EmptyAction");
+                    /*hexModel = new HexModelAnimated(new ModelInstance(biomeModelMap.get(tile.getBiome())), "Cylinder.001|EmptyAction");
                     Matrix4 m = hexModel.getModelInstance().transform.translate((float) loc.getX(), 0, (float) loc.getY());
 
-                    m = m.scale(0.012f, 0.012f, 0.012f);
-                    hexModel.getModelInstance().transform.set(m);
+                    m = m.scale(0.01f, 0.01f, 0.01f);
+                    hexModel.getModelInstance().transform.set(m);*/
+                    Model model = ModelManager.getInstance().getBiomeModels().get(Biome.WATER);
+                    for (Material material : model.materials) {
+                        material.clear();
+                        material.set(ColorAttribute.createDiffuse(
+                                new Color(0.3f, 0.3f, (float) (Math.random()*0.2f + 0.55f), 1)
+                        ));
+                    }
+                    hexModel = new HexModelAnimated(
+                            new ModelInstance(model)
+                    );
+
                 } else {
                     hexModel = new HexModel(new ModelInstance(biomeModelMap.get(tile.getBiome())));
                 }
@@ -391,7 +401,7 @@ public class ScreenGame extends HexagonScreen {
     private void update(float delta) {
         inputGame.update(delta);
 
-        //gameManager.getCurrentState().logic();
+        gameManager.getCurrentState().logic();
 
         if (gameManager.server != null) {
 
@@ -436,7 +446,7 @@ public class ScreenGame extends HexagonScreen {
         for (Material material : selectedModel.materials) {
             material.clear();
             material.set(ColorAttribute.createDiffuse(
-                    gameManager.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond()
+                    gameManager.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().color
             ));
         }
 
@@ -444,8 +454,8 @@ public class ScreenGame extends HexagonScreen {
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        GameManager.instance.messageUtil.add("Please select a city to begin...", 10_000, Color.GREEN);
-        GameManager.instance.messageUtil.actionBar("Please select a city to begin...", 10_000, Color.GREEN);
+        GameManager.instance.messageUtil.add("Please select a town to begin...", 10_000, Color.GREEN);
+        GameManager.instance.messageUtil.actionBar("Please select a town to begin...", 15_000, Color.GREEN);
 
         if(gameManager.server.isHost())
             Logic.start();

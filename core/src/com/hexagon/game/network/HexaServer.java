@@ -91,7 +91,7 @@ public class HexaServer {
 
         sessionData = new SessionData();
         sessionData.addNewPlayer(HexaServer.senderId,"OFFLINE_HOST",
-                GameManager.instance.colorUtil.getNext());
+                new Player(GameManager.instance.colorUtil.getNext(), HexaServer.username));
 
         socket = new Socket(); // Just an empty socket instance to prevent nullpointers
         offlineGame = true;

@@ -13,21 +13,21 @@ public class HexModelAnimated extends HexModel {
 
     private float velY = 0.1f;
 
-    public HexModelAnimated(ModelInstance modelInstance, String animationName) {
+    public HexModelAnimated(ModelInstance modelInstance) {
         super(modelInstance);
-        animationController = new AnimationController(modelInstance);
+        //animationController = new AnimationController(modelInstance);
         /*System.out.println("Animations: " + modelInstance.animations.size);
         for (int i=0; i<modelInstance.animations.size; i++) {
             System.out.println("Animation " + i + ": " + modelInstance.animations.get(i).id);
         }*/
-        animationController.setAnimation(animationName);
+        //animationController.setAnimation(animationName);
     }
 
     public void update(float delta) {
-        if (y >= 0) {
-            velY = (float) (-0.03f - Math.random()*0.015f);
-        } else if (y <= -6) {
-            velY = (float) (0.03f + Math.random()*0.015f);
+        if (y >= -0.15) {
+            velY = (float) (-0.0005f - Math.random()*0.00025f);
+        } else if (y <= -0.25) {
+            velY = (float) (0.0005f + Math.random()*0.00025f);
         }
         move(0, velY, 0);
         //animationController.update(delta);

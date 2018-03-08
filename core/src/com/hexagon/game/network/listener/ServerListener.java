@@ -11,6 +11,7 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
@@ -96,8 +97,13 @@ public class ServerListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received JOIN" + HexaServer.WhatAmI(server));
                     PacketJoin packet = (PacketJoin) args[0];
 
-                    server.getSessionData().addNewPlayer(packet.getSenderId(), packet.getUsername(),
-                            GameManager.instance.colorUtil.getNext());
+                    Player player = new Player(GameManager.instance.colorUtil.getNext(), packet.getUsername());
+
+                    server.getSessionData().addNewPlayer(
+                            packet.getSenderId(),
+                            packet.getUsername(),
+                            player
+                    );
                     System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
 
                     // I'm the host, so I have to broadcast to my players that a new player has joined the game

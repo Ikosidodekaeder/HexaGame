@@ -1,6 +1,5 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.ui.windows.AnimationWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
@@ -16,11 +15,8 @@ public class Sidebar {
     public AnimationWindow statusWindow;
 
 
-
-    public Sidebar(GroupWindow window, Stage stage) {
-
-        statusWindow = new AnimationWindow(-255, 5, 5, 5, 250,Gdx.graphics.getHeight()-60, stage);
-
+    public Sidebar(GroupWindow window, Stage stage, int y, int y2, int height) {
+        statusWindow = new AnimationWindow(-255, y, 5, y2, 250, height, stage);
         window.getWindowList().add(statusWindow);
     }
 

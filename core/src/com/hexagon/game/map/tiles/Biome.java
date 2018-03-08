@@ -13,7 +13,7 @@ public enum Biome {
     PLAINS("grassland.g3db"),
     DESERT("desert.g3db"),
     ICE("iceland.g3db"),
-    WATER("water.g3db")
+    WATER("iceland.g3db")
     ;
 
     private String model;

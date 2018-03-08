@@ -1,5 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
@@ -53,6 +54,8 @@ public class StateStartOfGame extends State{
                     StructureType.CITY,
                     HexaServer.senderId
             ));
+        } else {
+            GameManager.instance.messageUtil.actionBar("Please select a town to begin...", 15_000, Color.GREEN);
         }
     }
 }

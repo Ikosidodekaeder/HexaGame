@@ -1,12 +1,10 @@
 package com.hexagon.game.network;
 
-import com.badlogic.gdx.graphics.Color;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.structures.StructureType;
-import com.hexagon.game.map.structures.resources.ResourceType;
 import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
@@ -15,8 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.meta.ComponentType;
-import de.svdragster.logica.components.meta.StdComponents;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.Pair;
 import de.svdragster.logica.util.SystemNotifications.NotificationRemoveEntity;
@@ -27,21 +23,21 @@ import de.svdragster.logica.world.Engine;
  */
 
 public class SessionData implements SessionActions {
-    public Map<UUID,Pair<Entity,Color>>        PlayerList = new Hashtable<>();
+    public Map<UUID,Pair<Entity,Player>>        PlayerList = new Hashtable<>();
 
     public HexMap   currentMap(){
         return GameManager.instance.getGame().getCurrentMap();
     }
 
-    public synchronized void  addNewPlayer(UUID playerID,String Name,Color color){
+    public synchronized void  addNewPlayer(UUID playerID,String Name,Player player){
 
         if(!PlayerList.containsKey(playerID)){
             PlayerList.put(
                     playerID,
-                    new Pair<Entity, Color>(Engine.getInstance().getEntityManager()
+                    new Pair<Entity, Player>(Engine.getInstance().getEntityManager()
                             .createID(
                                     new HexaComponentOwner(Name,HexaServer.senderId))
-                    , color));
+                    , player));
         }else
             throw new RuntimeException("User already in Game");
     }

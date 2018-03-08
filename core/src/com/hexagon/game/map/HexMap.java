@@ -119,7 +119,7 @@ public class HexMap {
 
         if (owner != null) {
             HexModel colorModel = new HexModel(new ModelInstance(ModelManager.getInstance().getColorModel(
-                    GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond()
+                    GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond().color
             )));
             colorModel.move((float) loc.getX(), 0.05f, (float) loc.getY());
             renderTile.setOwnerColor(colorModel);
