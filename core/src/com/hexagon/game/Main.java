@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralConsumer;
 import com.hexagon.game.Logic.Systems.HexaSystemGeneralProducer;
+import com.hexagon.game.Logic.Systems.HexaSystemMoneyTrader;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.WindowManager;
@@ -82,7 +83,8 @@ public class Main extends Game {
 					}
 				},
 				new HexaSystemGeneralProducer(engine),
-				new HexaSystemGeneralConsumer(engine)
+				new HexaSystemGeneralConsumer(engine),
+				new HexaSystemMoneyTrader(engine)
 		);
 
 

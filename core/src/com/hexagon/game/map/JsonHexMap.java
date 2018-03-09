@@ -11,6 +11,7 @@ import java.util.UUID;
 
 /**
  * Created by Sven on 27.02.2018.
+ *
  */
 
 public class JsonHexMap {
