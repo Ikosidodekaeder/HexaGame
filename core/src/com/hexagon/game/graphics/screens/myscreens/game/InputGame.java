@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.hexagon.game.Logic.Components.HexaComponentTrade;
+import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.State;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.input.HexInput;
@@ -18,7 +20,19 @@ import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.util.CameraHelper;
+import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
+import de.svdragster.logica.manager.Entity.Entity;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.world.Engine;
 
 /**
  * Created by Sven on 20.12.2017.
@@ -93,6 +107,22 @@ public class InputGame extends HexInput {
         }
         if (keycode == Input.Keys.P) {
 
+        }
+        if(keycode == Input.Keys.T){
+            ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"TRADE STARTED");
+            Iterator<UUID> player = GameManager.instance.server.getSessionData().PlayerList.keySet().iterator();
+            Engine.getInstance().BroadcastMessage(
+                    new NotificationNewEntity(
+                            Engine.getInstance().getEntityManager().createID(
+                                    new HexaComponentTrade(
+                                       GameManager.instance.server.getSessionData().PlayerList.get(player.next()).getFirst(),
+                                       GameManager.instance.server.getSessionData().PlayerList.get(player.next()).getFirst(),
+                                            HexaComponents.STONE,
+                                            1
+                                    )
+                            )
+                    )
+            );
         }
         return false;
     }

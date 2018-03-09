@@ -4,13 +4,12 @@ import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentTrade;
 import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.Logic.Systems.MoneyTraderDetails.GoodConversionRate;
+import com.hexagon.game.util.ConsoleColours;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.meta.StdComponents;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.system.System;
 import de.svdragster.logica.util.Pair;
@@ -75,21 +74,36 @@ public class HexaSystemMoneyTrader extends System {
     List<Entity> locateGood(HexaComponents GoodType, Entity Owner,long amount){
         ArrayList<Entity>    Goods = new ArrayList<>();
 
+        ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"Try to collect " +amount + " " + GoodType);
+        for(int j = 0; j < getGlobalEntityContext().getEntityContext().size() ; j++){
 
-        for(int j = 0; j < getGlobalEntityContext().getEntityContext().size(); j++){
+
             Entity Good = getGlobalEntityContext().getEntityContext().get(j);
 
             //Check if Entity is a Resource
-            if(Good.getComponentSignature().equals(Entity.generateTypeStringFromTypes(
-                    HexaComponents.OWNER,
-                    GoodType
-            ))){
+
+            String sig = Entity.generateTypeStringFromTypes(
+                    GoodType,
+                    HexaComponents.OWNER
+            );
+            ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"Check Entity: "+Good.toString());
+            ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,Good.getComponentSignature() + " === " + Entity.Signature.calculateSignature(sig));
+            if(Good.getComponentSignature().equals(Entity.Signature.calculateSignature(sig))){
                 //Check if the Owner of the Resource is OUR owner
+
                 Pair<Boolean,HexaComponentOwner> res = Good.hasAssociationWith(HexaComponents.OWNER);
+                ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND_BRIGHT,"Check Owner");
                 if(res.getFirst()){
+
                     HexaComponentOwner ow = (HexaComponentOwner)Owner.hasAssociationWith(HexaComponents.OWNER).getSecond();
+                    ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND_BRIGHT,res.getSecond().name + " === " + ow.name);
                     if(res.getSecond().getID().equals(ow.getID()))
+                    {
                         Goods.add(Good);
+                        ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND_BRIGHT,"OWNER MATCH");
+                        if(Goods.size() == amount)
+                            break;
+                    }
                 }
             }
         }
@@ -97,10 +111,17 @@ public class HexaSystemMoneyTrader extends System {
         return Goods;
     }
 
-    void changeOwner(Entity source,Entity owner){
+    HexaComponentOwner changeOwnerOf(Entity source, Entity owner){
+        HexaComponentOwner NewOwner = (HexaComponentOwner)owner.hasAssociationWith(HexaComponents.OWNER).getSecond();
+        HexaComponentOwner OldOwner = (HexaComponentOwner)source.hasAssociationWith(HexaComponents.OWNER).getSecond();
+        ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,source + " was owned by >>" + OldOwner.name + "<< will now be owned by >>"
+        + NewOwner.name+"<<");
+
         source.associateComponent(
-                (HexaComponentOwner)owner.hasAssociationWith(HexaComponents.OWNER).getSecond()
+                NewOwner
         );
+        source.generateSignature();
+        return OldOwner;
     }
 
     @Override
@@ -121,7 +142,7 @@ public class HexaSystemMoneyTrader extends System {
                  * IF the amount of goods is negative the Origin of the Trade sells its
                  * resources TO the recipient and therefor ownership is transferred to the Recipient
                  */
-                isBuyer = legal.getSecond().OriginAmount > 0 ? true : false;
+                isBuyer = legal.getSecond().OriginAmount >= 0 ;
 
                 if(isBuyer)
                     /*
@@ -130,7 +151,7 @@ public class HexaSystemMoneyTrader extends System {
                     goodsOfOrigin = locateGood(
                             legal.getSecond().OriginGood,
                             legal.getSecond().Recipient,
-                            (isBuyer ? legal.getSecond().OriginAmount : -legal.getSecond().OriginAmount)
+                            (legal.getSecond().OriginAmount)
                     );
                 else
                     /*
@@ -139,20 +160,24 @@ public class HexaSystemMoneyTrader extends System {
                     goodsOfOrigin = locateGood(
                             legal.getSecond().OriginGood,
                             legal.getSecond().Origin,
-                            (isBuyer ? legal.getSecond().OriginAmount : -legal.getSecond().OriginAmount)
+                            (-legal.getSecond().OriginAmount)
                             );
 
+
+                ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"Collect GOODS COUNT: " + String.valueOf(goodsOfOrigin.size()));
                 if(goodsOfOrigin.size() >= (isBuyer ? legal.getSecond().OriginAmount : -legal.getSecond().OriginAmount) )
                 {
                      /*
                             Transfer Ownership of Resources
                      */
+                    ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,"TRANSERFER OF OWNERSHIP IN PROGRESS");
+                    ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,"Collect GOODS COUNT: " + String.valueOf(goodsOfOrigin.size()));
                     if(isBuyer)
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwner(goodsOfOrigin.get(i),legal.getSecond().Recipient);
+                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Origin);
                     else
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwner(goodsOfOrigin.get(i),legal.getSecond().Origin);
+                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Recipient);
 
 
                     if(isBuyer)
@@ -161,6 +186,10 @@ public class HexaSystemMoneyTrader extends System {
                     else
                         ( (HexaComponentOwner)legal.getSecond().Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).money -=
                                 (long) (legal.getSecond().OriginAmount * CurrentConversion.rate()) ;
+                }else{
+                    ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"TRANSFER OF OWNERSHIP NOT POSSIBLE");
+                    ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,String.valueOf(goodsOfOrigin.size()));
+                    ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,goodsOfOrigin.toString());
                 }
 
                 //Remove executed Trade
@@ -172,6 +201,7 @@ public class HexaSystemMoneyTrader extends System {
                 /*
                  In Case Of Failure Inform the World about it.
                 * */
+                ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"TRADE Unsuccssesfull");
                 engine.BroadcastMessage(
                         null
                 );
@@ -186,17 +216,21 @@ public class HexaSystemMoneyTrader extends System {
 
         if(o instanceof NotificationNewEntity)
         {
+
             NotificationNewEntity e = (NotificationNewEntity) o;
             if(e.isOfType(HexaComponents.TRADE)){
+                ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"TRADE Recieved");
                 this.getLocalEntityCache().add(e.getEntity());
             }
         }
         if(o instanceof NotificationRemoveEntity)
         {
+            ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"TRADE Finished");
             NotificationRemoveEntity e = (NotificationRemoveEntity) o;
             if(e.getEntity().hasAnyAssociations())
                 if(e.isOfType(HexaComponents.TRADE)){
                     this.getLocalEntityCache().remove(e.getEntity());
+                    this.getGlobalEntityContext().removeID(e.getEntity());
                 }
         }
     }
