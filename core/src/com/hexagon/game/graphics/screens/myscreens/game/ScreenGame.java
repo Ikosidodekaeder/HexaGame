@@ -425,7 +425,7 @@ public class ScreenGame extends HexagonScreen {
                 && gameManager.server.isHost()) {
             updateCityTime += delta;
 
-            if (updateCityTime >= 2.0f) {
+            if (updateCityTime >= 5.0f) {
                 System.out.println("Updating all cities " + currentMap.getCities().size());
                 updateCityTime = 0;
                 // Update cities

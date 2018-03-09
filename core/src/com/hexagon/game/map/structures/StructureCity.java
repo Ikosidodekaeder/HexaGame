@@ -118,7 +118,7 @@ public class StructureCity extends Structure {
     public void update() {
         calculateHappiness();
 
-        float populationAdd = (happiness - 0.5f)*100;
+        float populationAdd = (happiness - 0.5f)*200;
         population += populationAdd;
         int maxPopulation = getMaxPopulation();
         if (population > maxPopulation) {
