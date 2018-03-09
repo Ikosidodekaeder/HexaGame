@@ -18,7 +18,8 @@ public enum PacketType {
     SERVER_LIST((byte) 0x09),
     PLAYER_LOADED((byte) 0x0A),
     HOST_GENERATING((byte) 0x0B),
-    PLAYER_STATUS((byte)0x0C);
+    PLAYER_STATUS((byte)0x0C),
+    CITY_UPDATE((byte) 0x0D);
 
     public byte ID;
 

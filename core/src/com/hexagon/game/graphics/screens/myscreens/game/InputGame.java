@@ -114,7 +114,6 @@ public class InputGame extends HexInput {
         }
         HexModel model = getObject(screenX, screenY);
         if (model != null) {
-            System.out.println("Down " + button);
             if (button == 0) {
                 selectedTile = null;
                 select(

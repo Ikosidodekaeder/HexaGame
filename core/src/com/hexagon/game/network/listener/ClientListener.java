@@ -17,11 +17,14 @@ import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
+import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
 import com.hexagon.game.network.SessionData;
 import com.hexagon.game.network.packets.PacketBuild;
+import com.hexagon.game.network.packets.PacketCityUpdate;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketHostGenerating;
 import com.hexagon.game.network.packets.PacketJoin;
@@ -228,9 +231,10 @@ public class ClientListener extends PacketListener {
                                         "Congratulations on your new town", 7000, Color.SKY);
                             }
                         } else {
+                            StructureCity city = (StructureCity) map.getTileAt(pos).getStructure();
                             Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
                             GameManager.instance.messageUtil.add(
-                                    player.username + " has aquired a new town", 7000, player.color);
+                                    player.username + " has aquired " + city.getName(), 7000, player.color);
                         }
                     }
 
@@ -342,6 +346,8 @@ public class ClientListener extends PacketListener {
                             }
                         }
                     }
+
+
                     MapManager.getInstance().setCurrentHexMap(hexMap);
 
                     if (!GameManager.instance.server.isHost()
@@ -350,6 +356,29 @@ public class ClientListener extends PacketListener {
                     }
 
                     //GameManager.instance.getInputGame().updateSelectedInfo();
+                }
+            });
+
+            put(PacketType.CITY_UPDATE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    if (server.isHost()) {
+                        // The host does not need to update their cities here
+                        // They are already updated in ScreenGame -> update()
+                        return;
+                    }
+                    PacketCityUpdate packet = (PacketCityUpdate) args[0];
+                    Tile tile = GameManager.instance.getGame().getCurrentMap().getTileAt(packet.getArrayPosition());
+                    if (tile.getStructure() == null
+                            || !(tile.getStructure() instanceof StructureCity)) {
+                        return;
+                    }
+                    StructureCity city = (StructureCity) tile.getStructure();
+                    city.setHappiness(packet.getCity().getHappiness());
+                    city.setPopulation(packet.getCity().getPopulation());
+                    city.setLevel(packet.getCity().getLevel());
+                    city.setCityBuildingsList(packet.getCity().getCityBuildingsList());
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Updated CITY " + city.getName() + " / " + city.getPopulation() + HexaServer.WhatAmI(server));
                 }
             });
 

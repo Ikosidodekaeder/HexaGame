@@ -1,18 +1,16 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
-import com.hexagon.game.graphics.ui.buttons.UiButton;
+import com.hexagon.game.graphics.ui.UILabel;
+import com.hexagon.game.graphics.ui.UiElement;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
-import com.hexagon.game.network.packets.PacketDestroy;
 
 /**
  * Created by Sven on 01.03.2018.
@@ -41,23 +39,43 @@ public class SidebarCityStats extends Sidebar {
 
         StructureCity city = (StructureCity) tile.getStructure();
 
+        cityLevel(stage, city);
+        population(stage, city);
+        happiness(stage, city);
+
+        for (UiElement element : statusWindow.getElementList()) {
+            element.setHeight(statusWindow.getElementList().get(0).getHeight() + 10);
+        }
         statusWindow.orderAllNeatly(1);
         statusWindow.updateElements();
     }
 
-    private void destroyForestryButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Remove Forestry", 5, 0, 50, 0, 26);
-        buttonForest.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                GameManager.instance.server.send(
-                        new PacketDestroy(p)
-                );
-                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
-            }
-        });
-        statusWindow.add(buttonForest, stage);
 
+    private void cityLevel(final Stage stage, StructureCity city) {
+        UILabel label = new UILabel(5, 0, 0, 0, 32, "City Level " + (city.getLevel() + 1));
+        statusWindow.add(label, stage);
+    }
+
+    private void population(final Stage stage, StructureCity city) {
+        UILabel label = new UILabel(5, 0, 0, 0, 32, "Population: " + city.getPopulation());
+        statusWindow.add(label, stage);
+    }
+
+    private void happiness(final Stage stage, StructureCity city) {
+        UILabel label = new UILabel(5, 0, 0, 0, 32, "Happiness: "
+                + (city.getHappiness()*100) + "%");
+        if (city.getHappiness() >= 0.9) {
+            label.getLabel().getStyle().fontColor = Color.GREEN;
+        } else if (city.getHappiness() >= 0.7) {
+            label.getLabel().getStyle().fontColor = Color.LIME;
+        } else if (city.getHappiness() >= 0.5) {
+            label.getLabel().getStyle().fontColor = Color.YELLOW;
+        } else if (city.getHappiness() >= 0.3) {
+            label.getLabel().getStyle().fontColor = Color.ORANGE;
+        } else {
+            label.getLabel().getStyle().fontColor = Color.RED;
+        }
+        statusWindow.add(label, stage);
     }
 
 }

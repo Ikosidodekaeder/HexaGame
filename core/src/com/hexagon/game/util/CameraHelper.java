@@ -84,7 +84,6 @@ public class CameraHelper {
                     velocity = 0.015f;
                 }
             }
-            System.out.println(t + " //// " + velocity);
         }
         if (t > 1) {
             if (unlock) {

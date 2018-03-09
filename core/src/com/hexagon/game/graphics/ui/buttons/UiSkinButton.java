@@ -28,7 +28,6 @@ public class UiSkinButton extends UiElement {
         //skin.add("down", );
 
 
-        long start = System.currentTimeMillis();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(FontManager.handlePiximisa);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 32;
@@ -47,7 +46,6 @@ public class UiSkinButton extends UiElement {
         textButton = new TextButton(text, style);
         textButton.setX(x);
         textButton.setY(y);
-        System.out.println("Time: " + (System.currentTimeMillis() - start));
     }
 
     public UiSkinButton(String text, float x, float y, float width, float height, Stage stage, ChangeListener changeListener) {

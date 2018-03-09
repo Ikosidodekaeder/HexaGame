@@ -23,7 +23,6 @@ public class WindowNotification extends Window {
                 SIZEX, SIZEY);
         super.setPriority(100);
 
-        System.out.println(Gdx.graphics.getWidth()/2 - SIZEX/2 + " //// " + getX());
 
         add(new UILabel(getX() - SIZEX/2, getY() - SIZEY/2 + 50, SIZEX, 100, 32, text), stage);
         UiButton button = new UiButton("[Confirm]", getX() - SIZEX/2 + 20, getY() - getHeight() + 50, 100, 50);

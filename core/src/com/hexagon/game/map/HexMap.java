@@ -13,6 +13,8 @@ import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,6 +27,8 @@ public class HexMap {
 
     private Tile[][] tiles;
     private Chunk[][] chunks;
+
+    private transient List<StructureCity> cities = new ArrayList<>();
 
 
     public HexMap(int sizeX, int sizeY) {
@@ -188,5 +192,9 @@ public class HexMap {
         RenderTile renderTile = tile.getRenderTile();
         tile.setStructure(null);
         renderTile.getStructures().clear();
+    }
+
+    public List<StructureCity> getCities() {
+        return cities;
     }
 }

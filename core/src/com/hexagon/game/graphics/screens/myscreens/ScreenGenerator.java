@@ -183,7 +183,6 @@ public class ScreenGenerator extends HexagonScreen {
                     StructureCity newCity = new StructureCity();
                     newCity.setName(getRandomCityName(generatedTiles, random));
                     tile.setStructure(newCity);
-
                 }
                 return tile;
             }

@@ -201,6 +201,14 @@ public class ServerListener extends PacketListener {
                 }
             });
 
+            put(PacketType.CITY_UPDATE, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received CITY UPDATE" + HexaServer.WhatAmI(server));
+
+                }
+            });
+
             put(PacketType.SERVER_LIST, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {

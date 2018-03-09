@@ -55,12 +55,7 @@ public class SidebarResources extends Sidebar {
         statusWindow.add(woodTrade, stage);
         statusWindow.add(StoneResource, stage);
         statusWindow.add(stoneTrade, stage);
-        for (int i=0; i<15; i++) {
-            statusWindow.add(
-                    new UILabel(0, 0, 0, 0, 28, "Test " + ((int) Math.random()*400)),
-                    stage
-            );
-        }
+
         for (UiElement element : statusWindow.getElementList()) {
             element.setHeight(element.getHeight() + 10);
             element.setX(element.getX() + 5);
@@ -82,8 +77,9 @@ public class SidebarResources extends Sidebar {
         private UiButton    buy;
         private UILabel     label;
         private UiButton    sell;
+        private UILabel     price;
 
-        private UiElement[] elements = new UiElement[3];
+        private UiElement[] elements = new UiElement[4];
 
 
         public UiResourceTrade(float height) {
@@ -91,14 +87,17 @@ public class SidebarResources extends Sidebar {
             buy = new UiButton("Buy", 0, 0, 0, 0, 28);
             buy.getTextButton().getStyle().fontColor = new Color(0.3f, 0.8f, 0.3f, 1);
 
-            label = new UILabel(0, 0, 0, 0, 28, " 100$ ");
+            label = new UILabel(0, 0, 0, 0, 28, " (100) ");
 
             sell = new UiButton("Sell", 0, 0, 0, 0, 28);
             sell.getTextButton().getStyle().fontColor = new Color(0.85f, 0.3f, 0.3f, 1);
 
+            price = new UILabel(0, 0, 0, 0, 28, " 50$ ");
+
             elements[0] = buy;
             elements[1] = label;
             elements[2] = sell;
+            elements[3] = price;
 
             setHeight(height);
         }
@@ -160,7 +159,7 @@ public class SidebarResources extends Sidebar {
         @Override
         public void setDisplayX(float displayX) {
             super.setDisplayX(displayX);
-            float lastX = 15;
+            float lastX = 10;
             for (UiElement element : elements) {
                 element.setDisplayX(displayX + lastX);
                 lastX += element.getWidth();

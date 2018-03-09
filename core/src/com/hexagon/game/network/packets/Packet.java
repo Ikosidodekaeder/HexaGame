@@ -1,6 +1,10 @@
 package com.hexagon.game.network.packets;
 
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.map.structures.CityBuildings;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.HexaServer;
 
@@ -116,6 +120,37 @@ public abstract class Packet {
                  StructureType structureType = StructureType.valueOf(arr[offset+1]);
                  UUID owner = UUID.fromString(arr[offset+2]);
                  return new PacketBuild(senderId, point, structureType, owner);
+             case CITY_UPDATE:
+                 strPoint = arr[offset].split(",");
+                 point = new Point(
+                         Integer.parseInt(strPoint[0]),
+                         Integer.parseInt(strPoint[1])
+                 );
+                 if (GameManager.instance.getGame() == null
+                         || GameManager.instance.getGame().getCurrentMap() == null) {
+                     return null;
+                 }
+                 HexMap map = GameManager.instance.getGame().getCurrentMap();
+                 if (map.getTileAt(point).getStructure() ==  null
+                         || !(map.getTileAt(point).getStructure() instanceof StructureCity)) {
+                     return null;
+                 }
+                 StructureCity city = (StructureCity) GameManager.instance.getGame().getCurrentMap().getTileAt(point).getStructure();
+                 int level = Integer.parseInt(arr[offset+1]);
+                 String[] buildings = arr[offset+2].split(",");
+                 float happiness = Float.parseFloat(arr[offset+3]);
+                 float population = Float.parseFloat(arr[offset+4]);
+
+                 city.setLevel(level);
+                 city.getCityBuildingsList().clear();
+                 for (String strBuilding : buildings) {
+                     CityBuildings building = CityBuildings.valueOf(strBuilding);
+                     city.getCityBuildingsList().add(building);
+                 }
+                 city.setHappiness(happiness);
+                 city.setPopulation(population);
+
+                 return new PacketCityUpdate(point, city);
              case DESTROY:
                  strPoint = arr[offset].split(",");
                  point = new Point(

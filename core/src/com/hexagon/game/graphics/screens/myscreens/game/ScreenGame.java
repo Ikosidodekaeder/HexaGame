@@ -36,6 +36,7 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Chunk;
@@ -45,6 +46,7 @@ import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketCityUpdate;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
@@ -398,6 +400,7 @@ public class ScreenGame extends HexagonScreen {
     }
 
     private float callEventsTime = 0;
+    private float updateCityTime = 0;
 
     private void update(float delta) {
         inputGame.update(delta);
@@ -415,6 +418,24 @@ public class ScreenGame extends HexagonScreen {
                 callEventsTime = 0;
 
                 gameManager.messageUtil.update();
+            }
+        }
+
+        if (gameManager.server != null
+                && gameManager.server.isHost()) {
+            updateCityTime += delta;
+
+            if (updateCityTime >= 2.0f) {
+                System.out.println("Updating all cities " + currentMap.getCities().size());
+                updateCityTime = 0;
+                // Update cities
+                for (int i = 0; i < currentMap.getCities().size(); i++) {
+                    StructureCity city = currentMap.getCities().get(i);
+                    city.update();
+                    gameManager.server.send(
+                            new PacketCityUpdate(city.getArrayPosition(), city)
+                    );
+                }
             }
         }
     }
