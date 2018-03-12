@@ -9,6 +9,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.SidebarCi
 import com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar.SidebarCityStats;
 import com.hexagon.game.graphics.screens.myscreens.game.InputGame;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.graphics.ui.windows.Window;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
@@ -23,6 +24,7 @@ public class StateCityView extends State {
     private GroupWindow         groupWindow;
     private SidebarCity         sidebarCity;
     private SidebarCityStats    sidebarCityStats;
+    private Window              hoverWindow; // This displays the city name and level in the middle of the screen
 
     public StateCityView(InputGame input, GameManager gameManager){
         super(StateType.CITY_VIEW, input, gameManager);
@@ -34,7 +36,9 @@ public class StateCityView extends State {
 
         sidebarCityStats = new SidebarCityStats(groupWindow, gameManager.getStage());
 
-
+        hoverWindow = new Window(Gdx.graphics.getWidth()/2 - 200, Gdx.graphics.getHeight()-200, 400, 100);
+        groupWindow.getWindowList().add(hoverWindow);
+        hoverWindow.hide(gameManager.getStage());
     }
 
     @Override
@@ -51,13 +55,15 @@ public class StateCityView extends State {
     public void show() {
         sidebarCity.statusWindow.show(gameManager.getStage());
         sidebarCityStats.statusWindow.show(gameManager.getStage());
-
+        hoverWindow.show(gameManager.getStage());
     }
 
     @Override
     public void hide() {
         sidebarCity.statusWindow.hide(gameManager.getStage());
         sidebarCityStats.statusWindow.hide(gameManager.getStage());
+
+        hoverWindow.hide(gameManager.getStage());
 
         input.cameraHelper.moveTo(input.cameraLockOnTile, true);
         input.cameraLockOnTile = null;
@@ -82,5 +88,9 @@ public class StateCityView extends State {
         sidebarCityStats.deselect(stage);
         sidebarCity.statusWindow.hide(gameManager.getStage());
         sidebarCityStats.statusWindow.show(gameManager.getStage());*/
+    }
+
+    public Window getHoverWindow() {
+        return hoverWindow;
     }
 }

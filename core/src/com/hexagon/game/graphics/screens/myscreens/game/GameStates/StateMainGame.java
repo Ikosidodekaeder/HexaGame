@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameStates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
@@ -12,6 +13,7 @@ import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.HexaServer;
 
 /**
  * Created by Johannes on 06.03.2018.
@@ -47,6 +49,15 @@ public class StateMainGame extends State{
 
         if (tile.getStructure() != null
                 && tile.getStructure().getType() == StructureType.CITY) {
+
+
+            if (tile.getOwner() == null
+                    || !tile.getOwner().equals(HexaServer.senderId)) {
+                gameManager.messageUtil.add("You don't own this city!", 4000, Color.RED);
+                gameManager.messageUtil.add(tile.getOwner() + "", 4000, Color.RED);
+                return;
+            }
+
             gameManager.setCurrentState(StateType.CITY_VIEW);
             gameManager.getCurrentState().select(map, p, stage);
             return;

@@ -431,10 +431,11 @@ public class ScreenGame extends HexagonScreen {
                 // Update cities
                 for (int i = 0; i < currentMap.getCities().size(); i++) {
                     StructureCity city = currentMap.getCities().get(i);
-                    city.update();
-                    gameManager.server.send(
-                            new PacketCityUpdate(city.getArrayPosition(), city)
-                    );
+                    if (city.update()) {
+                        gameManager.server.send(
+                                new PacketCityUpdate(city.getArrayPosition(), city)
+                        );
+                    }
                 }
             }
         }

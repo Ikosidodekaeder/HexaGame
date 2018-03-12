@@ -115,7 +115,8 @@ public class StructureCity extends Structure {
         setHappiness(newHappiness);
     }
 
-    public void update() {
+    public boolean update() {
+        if (cityBuildingsList.isEmpty()) return false;
         calculateHappiness();
 
         float populationAdd = (happiness - 0.5f)*200;
@@ -124,7 +125,7 @@ public class StructureCity extends Structure {
         if (population > maxPopulation) {
             population = maxPopulation;
         }
-        System.out.println("Updated " + name + " -> " + population);
+        return true;
     }
 
     public Point getArrayPosition() {

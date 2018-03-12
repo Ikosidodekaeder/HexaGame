@@ -127,7 +127,7 @@ public class HexMap {
             )));
             colorModel.move((float) loc.getX(), 0.05f, (float) loc.getY());
             renderTile.setOwnerColor(colorModel);
-            System.out.println("Color: " + GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond().toString());
+            tile.setOwner(owner);
         }
 
         if (type == StructureType.FOREST) {

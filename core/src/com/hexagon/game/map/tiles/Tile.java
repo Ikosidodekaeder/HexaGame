@@ -11,6 +11,7 @@ import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -28,6 +29,7 @@ public class Tile {
 
     private Biome           biome = Biome.ICE;
     private IStructure      structure;
+    private UUID            owner;
 
     private transient List<Car>       cars = new ArrayList<>();
 
@@ -92,5 +94,13 @@ public class Tile {
 
     public void updateTileLocation() {
         this.tileLocation = HexagonUtil.getTileLocation(arrayX, arrayY);
+    }
+
+    public UUID getOwner() {
+        return owner;
+    }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
     }
 }

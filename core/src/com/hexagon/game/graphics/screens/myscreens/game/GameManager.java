@@ -50,7 +50,6 @@ public class GameManager {
     public List<State>      states = new ArrayList<>();
     public State            currentState;
 
-
     private Map<String,Integer> PlayerResources = new Hashtable<String,Integer>() {{
         put("STONE",    0);
         put("WOOD",     0);

@@ -9,10 +9,13 @@ import com.hexagon.game.graphics.screens.myscreens.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
+import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketBuild;
+import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
@@ -127,6 +130,38 @@ public class ServerListener extends PacketListener {
                 }
             });
 
+            put(PacketType.CITY_BUILD, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received CITY_BUILD" + HexaServer.WhatAmI(server));
+                    PacketCityBuild packet = (PacketCityBuild) args[0];
+
+                    HexMap map = GameManager.instance.getGame().getCurrentMap();
+                    Tile tile = map.getTileAt(packet.getArrayPosition());
+                    if (tile.getOwner() == null
+                            || !tile.getOwner().equals(packet.getSenderId())) {
+                        // The sender may not build in this city
+                        return;
+                    }
+
+                    // check if the player has enough money to buy
+
+                    if (tile.getStructure() instanceof StructureCity) {
+                        StructureCity city = (StructureCity) tile.getStructure();
+                        if (!city.getCityBuildingsList().contains(packet.getBuilding())) {
+                            city.getCityBuildingsList().add(packet.getBuilding());
+
+                            // Confirm the CityBuild Packet
+                            // (The router sends it to all clients)
+                            server.send(new PacketCityBuild(packet.getArrayPosition(), packet.getBuilding()));
+                        }
+                    }
+
+
+
+                }
+            });
+
             put(PacketType.BUILD, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
@@ -143,7 +178,8 @@ public class ServerListener extends PacketListener {
                     // Let the ClientListener handle the clientsided logic for building
                     //server.getClientListener().call(packetBuild);
                     Tile tile = server.getSessionData().currentMap().getTileAt(build.getArrayPosition());
-                    if (tile.getRenderTile().getOwnerColor() == null) {
+                    if (tile.getOwner() == null
+                            || tile.getOwner().equals(build.getSenderId())) {
                         // Respond
                         server.send(new PacketBuild(
                                         build.getArrayPosition(),

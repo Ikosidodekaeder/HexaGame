@@ -120,6 +120,14 @@ public abstract class Packet {
                  StructureType structureType = StructureType.valueOf(arr[offset+1]);
                  UUID owner = UUID.fromString(arr[offset+2]);
                  return new PacketBuild(senderId, point, structureType, owner);
+             case CITY_BUILD:
+                 strPoint = arr[offset].split(",");
+                 point = new Point(
+                         Integer.parseInt(strPoint[0]),
+                         Integer.parseInt(strPoint[1])
+                 );
+                 CityBuildings building = CityBuildings.valueOf(arr[offset+1]);
+                 return new PacketCityBuild(senderId, point, building);
              case CITY_UPDATE:
                  strPoint = arr[offset].split(",");
                  point = new Point(
@@ -144,7 +152,7 @@ public abstract class Packet {
                  city.setLevel(level);
                  city.getCityBuildingsList().clear();
                  for (String strBuilding : buildings) {
-                     CityBuildings building = CityBuildings.valueOf(strBuilding);
+                     building = CityBuildings.valueOf(strBuilding);
                      city.getCityBuildingsList().add(building);
                  }
                  city.setHappiness(happiness);

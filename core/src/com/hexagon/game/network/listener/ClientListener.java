@@ -11,12 +11,14 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
+import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateCityView;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
 import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.map.structures.CityBuildings;
 import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
@@ -24,6 +26,7 @@ import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
 import com.hexagon.game.network.SessionData;
 import com.hexagon.game.network.packets.PacketBuild;
+import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketCityUpdate;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketHostGenerating;
@@ -126,6 +129,39 @@ public class ClientListener extends PacketListener {
                         GameManager.instance.messageUtil.add(message);
 
                     }
+                }
+            });
+
+            put(PacketType.CITY_BUILD, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketCityBuild packet = (PacketCityBuild) args[0];
+
+                    HexMap map = GameManager.instance.getGame().getCurrentMap();
+                    Tile tile = map.getTileAt(packet.getArrayPosition());
+
+                    if (tile.getOwner() == null
+                            || !tile.getOwner().equals(HexaServer.senderId)) {
+                        // I don't own this tile, so I ignore this packet
+                        return;
+                    }
+
+                    if (tile.getStructure() instanceof StructureCity) {
+                        StructureCity city = (StructureCity) tile.getStructure();
+                        CityBuildings building = packet.getBuilding();
+                        if (!city.getCityBuildingsList().contains(building)) {
+                            city.getCityBuildingsList().add(building);
+
+                            GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
+                            GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
+
+                            if (GameManager.instance.getCurrentState().getStateType() == StateType.CITY_VIEW) {
+                                StateCityView stateCityView = (StateCityView) GameManager.instance.getCurrentState();
+                                stateCityView.select(map, packet.getArrayPosition(), GameManager.instance.getStage());
+                            }
+                        }
+                    }
+
 
 
                 }

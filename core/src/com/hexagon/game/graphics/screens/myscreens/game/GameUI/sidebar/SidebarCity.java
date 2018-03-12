@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateCityView;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
 import com.hexagon.game.graphics.ui.UILabel;
@@ -18,6 +19,7 @@ import com.hexagon.game.map.structures.CityBuildings;
 import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.packets.PacketCityBuild;
 
 /**
  * Created by Sven on 01.03.2018.
@@ -35,12 +37,14 @@ public class SidebarCity extends Sidebar {
 
         costWindow = new DropdownWindow(0, 0, 400, 400, 0, 0);
         costWindow.hide(stage);
+
     }
 
     @Override
     public void select(final HexMap map, final Point p, final Stage stage) {
         super.select(map, p, stage);
         statusWindow.removeAll(stage);
+        owner.getHoverWindow().removeAll(stage);
 
         Tile tile = map.getTileAt(p.getX(), p.getY());
         if (tile.getStructure() == null
@@ -55,20 +59,39 @@ public class SidebarCity extends Sidebar {
         StructureCity city = (StructureCity) tile.getStructure();
 
 
-        cityName(stage, city);
+        cityNameLevel(stage, city);
+
         exitCityView(stage);
         showCityBuildings(stage, city, map, p);
 
         for (UiElement element : statusWindow.getElementList()) {
-            element.setHeight(statusWindow.getElementList().get(0).getHeight() + 10);
+            element.setHeight(28);
         }
         statusWindow.orderAllNeatly(1);
         statusWindow.updateElements();
     }
 
-    private void cityName(final Stage stage, StructureCity city) {
-        UILabel label = new UILabel(5, 0, 50, 0, 32, "" + city.getName(), Color.SKY, null);
-        statusWindow.add(label, stage);
+    @Override
+    public void deselect(Stage stage) {
+        super.deselect(stage);
+        owner.getHoverWindow().hide(stage);
+    }
+
+    private void cityNameLevel(final Stage stage, StructureCity city) {
+        UILabel labelName   = new UILabel(
+                0, 0, 0, 0, 42, "" + city.getName(), Color.SKY, null
+        );
+        UILabel labelLevel  = new UILabel(
+                0, -50, 0, 0, 42, "Level " + (city.getLevel() + 1), Color.SKY, null
+        );
+        labelName.setY(owner.getHoverWindow().getHeight() - labelName.getHeight()*1.5f);
+        labelName.setX(owner.getHoverWindow().getWidth()/2  - labelName.getWidth()/2);
+
+        labelLevel.setY(labelName.getY() - labelLevel.getHeight() - 10);
+        labelLevel.setX(owner.getHoverWindow().getWidth()/2 - labelLevel.getWidth()/2);
+        owner.getHoverWindow().add(labelName, stage);
+        owner.getHoverWindow().add(labelLevel, stage);
+        owner.getHoverWindow().show(stage);
     }
 
 
@@ -120,10 +143,10 @@ public class SidebarCity extends Sidebar {
                         return;
                     }
                     // check if the player has enough money to buy
-                    owner.getGameManager().messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
-                    owner.getGameManager().messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
-                    city.getCityBuildingsList().add(building);
-                    select(map, p, stage);
+
+                    GameManager.instance.server.send(
+                            new PacketCityBuild(city.getArrayPosition(), building)
+                    );
                 }
             });
         }
