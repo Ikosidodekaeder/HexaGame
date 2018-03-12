@@ -256,12 +256,6 @@ public class ScreenGenerator extends HexagonScreen {
             @Override
             public void generatorFinished() {
 
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 final HexMap hexMap = new HexMap(mapGenerator.getSizeX(), mapGenerator.getSizeY());
                 hexMap.setTiles(mapGenerator.getGeneratedTiles());
 
