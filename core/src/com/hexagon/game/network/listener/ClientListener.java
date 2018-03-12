@@ -190,7 +190,7 @@ public class ClientListener extends PacketListener {
                                     Engine.getInstance().BroadcastMessage(
                                             new NotificationNewEntity(
                                                     Engine.getInstance().getEntityManager().createID(
-                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new HexaComponentOwner(server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond().username,packetBuild.getOwner()),
                                                             new ComponentProducer(),
                                                             new ComponentResource(
                                                                     0.000002f,
@@ -210,7 +210,7 @@ public class ClientListener extends PacketListener {
                                     Engine.getInstance().BroadcastMessage(
                                             new NotificationNewEntity(
                                                     Engine.getInstance().getEntityManager().createID(
-                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new HexaComponentOwner(server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond().username,packetBuild.getOwner()),
                                                             new ComponentProducer(),
                                                             new ComponentResource(
                                                                     0.000002f,
@@ -230,7 +230,7 @@ public class ClientListener extends PacketListener {
                                     Engine.getInstance().BroadcastMessage(
                                             new NotificationNewEntity(
                                                     Engine.getInstance().getEntityManager().createID(
-                                                            new HexaComponentOwner(packetBuild.getOwner().toString(),packetBuild.getOwner()),
+                                                            new HexaComponentOwner(server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond().username,packetBuild.getOwner()),
                                                             new ComponentProducer(),
                                                             new ComponentResource(
                                                                     0.000002f,

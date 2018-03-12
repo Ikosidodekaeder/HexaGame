@@ -154,7 +154,7 @@ public class GameManager {
             Player player = new Player(colorUtil.getNext(), HexaServer.username);
             server.getSessionData().addNewPlayer(
                     HexaServer.senderId,
-                    "HOST",
+                    "HOST_" + HexaServer.username,
                     player
             );
         } else {

@@ -1,5 +1,6 @@
 package com.hexagon.game.network.packets;
 
+import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.Point;
@@ -183,6 +184,15 @@ public abstract class Packet {
                  }
 
                  return new PacketPlayerStatus(senderId,UUID.fromString(arr[offset+1]),payload);
+             }
+             case TRADEMONEY:{
+                 String[] values = arr[offset].split(",");
+                 return new PacketTradeMoney(
+                         UUID.fromString(values[0]),
+                         UUID.fromString(values[1]),
+                         HexaComponents.valueOf(values[2]),
+                         Integer.parseInt(values[3])
+                 );
              }
          }
 

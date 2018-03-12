@@ -19,6 +19,7 @@ import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
@@ -111,12 +112,17 @@ public class InputGame extends HexInput {
         if(keycode == Input.Keys.T){
             ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"TRADE STARTED");
             Iterator<UUID> player = GameManager.instance.server.getSessionData().PlayerList.keySet().iterator();
+            UUID one = player.next();
+            UUID two = player.next();
+
+            ConsoleColours.Print(ConsoleColours.BLUE_BOLD_BRIGHT,"one: " + one.toString() + " ===== two:" + two.toString());
             Engine.getInstance().BroadcastMessage(
                     new NotificationNewEntity(
                             Engine.getInstance().getEntityManager().createID(
                                     new HexaComponentTrade(
-                                       GameManager.instance.server.getSessionData().PlayerList.get(player.next()).getFirst(),
-                                       GameManager.instance.server.getSessionData().PlayerList.get(player.next()).getFirst(),
+
+                                            GameManager.instance.server.getSessionData().PlayerList.get(two).getFirst(), // Destination
+                                            GameManager.instance.server.getSessionData().PlayerList.get(one).getFirst(), // Source
                                             HexaComponents.STONE,
                                             1
                                     )

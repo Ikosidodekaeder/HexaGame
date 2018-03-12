@@ -20,7 +20,8 @@ public enum PacketType {
     HOST_GENERATING((byte) 0x0B),
     PLAYER_STATUS((byte)0x0C),
     CITY_UPDATE((byte) 0x0D),
-    CITY_BUILD((byte) 0x0E);
+    CITY_BUILD((byte) 0x0E),
+    TRADEMONEY((byte) 0x0F);
 
     public byte ID;
 

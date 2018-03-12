@@ -107,7 +107,7 @@ public class ServerListener extends PacketListener {
                             packet.getUsername(),
                             player
                     );
-                    System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER)");
+                    System.out.println(packet.getUsername() + " has joined the game (I AM THE SERVER) " + packet.getSenderId().toString());
 
                     // I'm the host, so I have to broadcast to my players that a new player has joined the game
                     server.send(new PacketJoin(packet.getUsername(), packet.getSenderId(), packet.getVersion()));

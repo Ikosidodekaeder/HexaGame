@@ -2,6 +2,8 @@ package com.hexagon.game.Logic.Components;
 
 import com.hexagon.game.Logic.HexaComponents;
 
+import java.util.UUID;
+
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.manager.Entity.Entity;
 
@@ -27,5 +29,16 @@ public class HexaComponentTrade extends Component {
         this.OriginGood = type;
         this.OriginAmount = originAmount;
         setType(HexaComponents.TRADE);
+    }
+
+
+    public String ToString(){
+        return ((UUID)Recipient.hasAssociationWith(HexaComponents.OWNER).getSecond()).toString()
+                + ","
+                + ((UUID)Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).toString()
+                +","
+                +OriginGood
+                +","
+                +OriginAmount;
     }
 }

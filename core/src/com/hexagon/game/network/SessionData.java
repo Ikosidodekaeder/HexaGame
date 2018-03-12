@@ -36,7 +36,7 @@ public class SessionData implements SessionActions {
                     playerID,
                     new Pair<Entity, Player>(Engine.getInstance().getEntityManager()
                             .createID(
-                                    new HexaComponentOwner(Name,HexaServer.senderId))
+                                    new HexaComponentOwner(Name,playerID))
                     , player));
         }else
             throw new RuntimeException("User already in Game");

@@ -96,7 +96,7 @@ public class HexaSystemMoneyTrader extends System {
                 if(res.getFirst()){
 
                     HexaComponentOwner ow = (HexaComponentOwner)Owner.hasAssociationWith(HexaComponents.OWNER).getSecond();
-                    ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND_BRIGHT,res.getSecond().name + " === " + ow.name);
+                    ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND_BRIGHT,res.getSecond().name + " " + res.getSecond().getID() + " === " + ow.name + " " + ow.getID());
                     if(res.getSecond().getID().equals(ow.getID()))
                     {
                         Goods.add(Good);
@@ -114,6 +114,7 @@ public class HexaSystemMoneyTrader extends System {
     HexaComponentOwner changeOwnerOf(Entity source, Entity owner){
         HexaComponentOwner NewOwner = (HexaComponentOwner)owner.hasAssociationWith(HexaComponents.OWNER).getSecond();
         HexaComponentOwner OldOwner = (HexaComponentOwner)source.hasAssociationWith(HexaComponents.OWNER).getSecond();
+
         ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,source + " was owned by >>" + OldOwner.name + "<< will now be owned by >>"
         + NewOwner.name+"<<");
 
@@ -150,7 +151,7 @@ public class HexaSystemMoneyTrader extends System {
                      */
                     goodsOfOrigin = locateGood(
                             legal.getSecond().OriginGood,
-                            legal.getSecond().Recipient,
+                            legal.getSecond().Origin,
                             (legal.getSecond().OriginAmount)
                     );
                 else
@@ -159,7 +160,7 @@ public class HexaSystemMoneyTrader extends System {
                      */
                     goodsOfOrigin = locateGood(
                             legal.getSecond().OriginGood,
-                            legal.getSecond().Origin,
+                            legal.getSecond().Recipient,
                             (-legal.getSecond().OriginAmount)
                             );
 
@@ -174,17 +175,17 @@ public class HexaSystemMoneyTrader extends System {
                     ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,"Collect GOODS COUNT: " + String.valueOf(goodsOfOrigin.size()));
                     if(isBuyer)
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Origin);
+                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Recipient);
                     else
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Recipient);
+                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Origin);
 
 
                     if(isBuyer)
-                    ( (HexaComponentOwner)legal.getSecond().Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).money +=
+                    ( (HexaComponentOwner)legal.getSecond().Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).money -=
                             (long) (legal.getSecond().OriginAmount * CurrentConversion.rate()) ;
                     else
-                        ( (HexaComponentOwner)legal.getSecond().Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).money -=
+                        ( (HexaComponentOwner)legal.getSecond().Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).money +=
                                 (long) (legal.getSecond().OriginAmount * CurrentConversion.rate()) ;
                 }else{
                     ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"TRANSFER OF OWNERSHIP NOT POSSIBLE");
