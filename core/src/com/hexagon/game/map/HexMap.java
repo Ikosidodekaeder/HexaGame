@@ -179,6 +179,7 @@ public class HexMap {
             model.move((float) loc.getX(), 0.05f, (float) loc.getY());
             renderTile.getStructures().add(model);
         } else if (type == StructureType.MINE) {
+            renderTile.getStructures().clear();
             HexModel model = new HexModel(new ModelInstance(
                     ModelManager.getInstance().getStructureModels().get(StructureType.MINE).get(0)
             ));

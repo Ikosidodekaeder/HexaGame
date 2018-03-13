@@ -9,7 +9,7 @@ import com.hexagon.game.Logic.Components.HexaComponentStone;
 import com.hexagon.game.Logic.Components.HexaComponentWood;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.screens.myscreens.ScreenJoin;
+import com.hexagon.game.graphics.screens.myscreens.menu.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateCityView;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;

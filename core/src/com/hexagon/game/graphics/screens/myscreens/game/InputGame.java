@@ -19,18 +19,12 @@ import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
-import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.util.CameraHelper;
 import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
-import de.svdragster.logica.manager.Entity.Entity;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-
 
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
@@ -249,12 +243,12 @@ public class InputGame extends HexInput {
 
             screenGame.getCamera().fieldOfView = fov;*/
             float y = screenGame.getCamera().position.y + zoom;
-            if (y < 2.0f) {
+            if (y < 1.5f) {
                 if (!maxZoom) {
                     screenGame.getCamera().position.z += zoom;
                     maxZoom = true;
                 }
-                y = 2.0f;
+                y = 1.5f;
             } else if (y > 11.0f) {
                 if (!maxZoom) {
                     screenGame.getCamera().position.z += zoom;

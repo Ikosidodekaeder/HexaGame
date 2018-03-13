@@ -124,7 +124,7 @@ public class ScreenGame extends HexagonScreen {
 
     }
 
-    private void setupCamera(Point pos, Point lookTo,float fieldOfView, float near,float far){
+    private void setupCamera(Point pos, Point lookTo, float fieldOfView, float near,float far){
 
         camera = new PerspectiveCamera(fieldOfView, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set((float)pos.getX(),(float)pos.getY(), (float)pos.getZ());
@@ -299,6 +299,9 @@ public class ScreenGame extends HexagonScreen {
                 chunk.render(modelBatch, environment, camera, delta);
             }
         }
+
+        //shadowBatch.render(hoverInstance, environment);
+
 
         /*for (int x=0; x<currentMap.getTiles().length; x++) {
             for (int y=0; y<currentMap.getTiles()[x].length; y++) {
