@@ -27,7 +27,9 @@ public class StatusBar {
     public float StatusHeight = 50;
 
 
-    public UILabel labelClaims = new UILabel(10,level,200,StatusHeight,32,"? Claims");
+    public UILabel labelClaims = new UILabel(10,level,200,StatusHeight,32,"Claims: ?");
+    public UILabel labelPopulation = new UILabel(100,level,200,StatusHeight,32,"Population: 0");
+    public UILabel labelUnemployed = new UILabel(200,level,200,StatusHeight,32,"Unemployed: 0");
 
     public final UILabel PlayerID = new UILabel(775,level,200,StatusHeight,16,GameManager.instance.server.getLocalClientID().toString());
     public IngameMenu  MainMenu;

@@ -51,8 +51,8 @@ public class FadeWindow extends Window {
             }
             float toAdd = SPEED * Gdx.graphics.getDeltaTime();
             alpha += toAdd;
-            if (alpha > 1.0f) {
-                alpha = 1;
+            if (alpha > 0.75f) {
+                alpha = 0.75f;
             }
             for (UiElement element : getElementList()) {
                 if (element instanceof UiImage) {

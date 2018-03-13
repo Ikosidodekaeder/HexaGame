@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -17,6 +18,8 @@ public class UiImage extends UiElement {
         super(x, y, width, height);
 
         image = new Image(new Texture(Gdx.files.internal(path)));
+        Color color = image.getColor();
+        color.set(color.r, color.g, color.b, 0.75f);
         setDisplayX(x);
         setDisplayY(y);
     }
