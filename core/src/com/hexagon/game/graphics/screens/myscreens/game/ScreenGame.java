@@ -432,6 +432,7 @@ public class ScreenGame extends HexagonScreen {
                 for (int i = 0; i < currentMap.getCities().size(); i++) {
                     StructureCity city = currentMap.getCities().get(i);
                     if (city.update()) {
+                        System.out.println("PacketCityUpdate " + city.getName() + " -> " + city.getLevel());
                         gameManager.server.send(
                                 new PacketCityUpdate(city.getArrayPosition(), city)
                         );

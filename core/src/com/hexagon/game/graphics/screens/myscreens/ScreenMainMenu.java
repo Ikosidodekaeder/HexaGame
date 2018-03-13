@@ -100,10 +100,11 @@ public class ScreenMainMenu extends HexagonScreen {
         playHost.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                new WindowNotification("Registering you as a Host...", stage, windowManager);
-
                 GameManager gameManager = GameManager.instance;
+                new WindowNotification("Connecting...", stage, windowManager);
                 gameManager.connect(true);
+                windowManager.removeNotifications(stage);
+                new WindowNotification("Registering you as a Host...", stage, windowManager);
                 gameManager.server.send(new PacketRegister(
                         HexaServer.senderId, // This is the host id
                         "Raum " + ((int) (Math.random()*100)+1),

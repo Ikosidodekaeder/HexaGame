@@ -144,10 +144,15 @@ public class ServerListener extends PacketListener {
                         return;
                     }
 
-                    // check if the player has enough money to buy
+                    if (packet.getBuilding() == null) {
+                        return;
+                    }
+
+                    // TODO: check if the player has enough money to buy
 
                     if (tile.getStructure() instanceof StructureCity) {
                         StructureCity city = (StructureCity) tile.getStructure();
+
                         if (!city.getCityBuildingsList().contains(packet.getBuilding())) {
                             city.getCityBuildingsList().add(packet.getBuilding());
 

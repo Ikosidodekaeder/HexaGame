@@ -1,6 +1,10 @@
 package com.hexagon.game.map.structures;
 
+import com.badlogic.gdx.graphics.Color;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.Point;
+import com.hexagon.game.map.tiles.Tile;
+import com.hexagon.game.network.HexaServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +100,7 @@ public class StructureCity extends Structure {
 
     public int getMaxPopulation() {
         // ((level + 1)^3)*1000
-        return (int) (Math.pow(level + 1, 3)*1000);
+        return (int) (Math.pow(level + 1, 3)*900);
     }
 
     public List<CityBuildings> getCityBuildingsList() {
@@ -119,13 +123,36 @@ public class StructureCity extends Structure {
         if (cityBuildingsList.isEmpty()) return false;
         calculateHappiness();
 
-        float populationAdd = (happiness - 0.5f)*200;
+        float populationAdd = (happiness - 0.5f)*2000;
         population += populationAdd;
         int maxPopulation = getMaxPopulation();
         if (population > maxPopulation) {
             population = maxPopulation;
         }
         return true;
+    }
+
+    public void upgrade(Tile tile, HexaServer server) {
+        tile.getRenderTile().getStructures().clear();
+        GameManager.instance.getGame().getCurrentMap().build(
+                tile.getArrayX(),
+                tile.getArrayY(),
+                StructureType.CITY,
+                tile.getOwner()
+        );
+        if (tile.getOwner().equals(HexaServer.senderId)) {
+            GameManager.instance.messageUtil.add(getName() + " has been upgraded!", 8000, Color.LIME);
+            GameManager.instance.getCurrentState().deselect(GameManager.instance.getStage());
+            GameManager.instance.getCurrentState().select(
+                    GameManager.instance.getGame().getCurrentMap(),
+                    getArrayPosition(),
+                    GameManager.instance.getStage()
+            );
+        } else {
+            GameManager.instance.messageUtil.add(
+                    server.getSessionData().PlayerList.get(tile.getOwner()).getSecond().username
+                            + " has upgraded " + getName(), 8000, Color.RED);
+        }
     }
 
     public Point getArrayPosition() {

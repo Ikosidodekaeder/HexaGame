@@ -127,8 +127,13 @@ public abstract class Packet {
                          Integer.parseInt(strPoint[0]),
                          Integer.parseInt(strPoint[1])
                  );
-                 CityBuildings building = CityBuildings.valueOf(arr[offset+1]);
-                 return new PacketCityBuild(senderId, point, building);
+                 if (arr[offset+1].equals("null")) {
+                     boolean upgradeCity = arr[offset+2].equals("true");
+                     return new PacketCityBuild(senderId, point, upgradeCity);
+                 } else {
+                     CityBuildings building = CityBuildings.valueOf(arr[offset + 1]);
+                     return new PacketCityBuild(senderId, point, building);
+                 }
              case CITY_UPDATE:
                  strPoint = arr[offset].split(",");
                  point = new Point(
@@ -153,7 +158,7 @@ public abstract class Packet {
                  city.setLevel(level);
                  city.getCityBuildingsList().clear();
                  for (String strBuilding : buildings) {
-                     building = CityBuildings.valueOf(strBuilding);
+                     CityBuildings building = CityBuildings.valueOf(strBuilding);
                      city.getCityBuildingsList().add(building);
                  }
                  city.setHappiness(happiness);

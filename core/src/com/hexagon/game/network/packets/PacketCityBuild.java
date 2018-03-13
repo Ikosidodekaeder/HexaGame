@@ -13,6 +13,7 @@ public class PacketCityBuild extends Packet{
 
     private Point           arrayPosition;
     private CityBuildings   building;
+    private boolean         upgrade = false;
 
 
     public PacketCityBuild(Point arrayPosition, CityBuildings building) {
@@ -21,10 +22,23 @@ public class PacketCityBuild extends Packet{
         this.building = building;
     }
 
+    public PacketCityBuild(Point arrayPosition, boolean upgrade) {
+        super(PacketType.CITY_BUILD);
+        this.arrayPosition = arrayPosition;
+        this.building = null;
+        this.upgrade = upgrade;
+    }
+
     public PacketCityBuild(UUID clientID, Point arrayPosition, CityBuildings building) {
         super(PacketType.CITY_BUILD, clientID);
         this.arrayPosition = arrayPosition;
         this.building = building;
+    }
+
+    public PacketCityBuild(UUID clientID, Point arrayPosition, boolean upgrade) {
+        super(PacketType.CITY_BUILD, clientID);
+        this.arrayPosition = arrayPosition;
+        this.upgrade = upgrade;
     }
 
     public Point getArrayPosition() {
@@ -43,9 +57,17 @@ public class PacketCityBuild extends Packet{
         this.building = building;
     }
 
+    public boolean isUpgrade() {
+        return upgrade;
+    }
+
+    public void setUpgrade(boolean upgrade) {
+        this.upgrade = upgrade;
+    }
+
     @Override
     public String serialize() {
         return super.serialize() + arrayPosition.getX() + "," + arrayPosition.getY() + ";"
-                + building.name() + ";";
+                + building.name() + ";" + upgrade + ";";
     }
 }

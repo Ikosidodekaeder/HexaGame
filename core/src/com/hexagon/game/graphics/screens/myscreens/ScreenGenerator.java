@@ -267,7 +267,6 @@ public class ScreenGenerator extends HexagonScreen {
 
                 JsonHexMap jsonHexMap = new JsonHexMap(hexMap.getTiles(), players);
                 PacketMapUpdate packetMapUpdate = new PacketMapUpdate(jsonHexMap.toJson());
-                System.out.println("sending mapupdate " + packetMapUpdate.getRawMapData());
 
                 stage.getActors().clear();
                 stage.addActor(

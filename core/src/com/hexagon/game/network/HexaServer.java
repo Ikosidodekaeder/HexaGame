@@ -8,6 +8,7 @@ import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
+import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketType;
@@ -148,6 +149,9 @@ public class HexaServer {
         if (isHost() && packet.getSenderId().equals(HexaServer.senderId)
                 && packet.getType() != PacketType.KEEPALIVE) {
             try {
+                if (packet instanceof PacketCityBuild) {
+                    System.out.println("_____ " + packet.getType().name());
+                }
                 clientListener.call(packet);
             } catch (Exception e) {
                 e.printStackTrace();

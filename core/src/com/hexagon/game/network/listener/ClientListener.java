@@ -135,6 +135,7 @@ public class ClientListener extends PacketListener {
             put(PacketType.CITY_BUILD, new Delegate() {
                 @Override
                 public void invoke(Object... args) throws Exception {
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received CITY_BUILD" + HexaServer.WhatAmI(server));
                     PacketCityBuild packet = (PacketCityBuild) args[0];
 
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
@@ -148,7 +149,23 @@ public class ClientListener extends PacketListener {
 
                     if (tile.getStructure() instanceof StructureCity) {
                         StructureCity city = (StructureCity) tile.getStructure();
+                        ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"host? " + server.isHost());
+                        if (server.isHost()) {
+                            ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"building " + (packet.getBuilding() == null) + ", " + packet.isUpgrade());
+                            if (packet.getBuilding() == null) {
+                                // Upgrade City
+                                ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"level " + city.getLevel());
+                                if (city.getLevel() >= 5) {
+                                    return;
+                                }
+                                city.setLevel(city.getLevel()+1);
+                                city.upgrade(tile, server);
+                                return;
+                            }
+                        }
+
                         CityBuildings building = packet.getBuilding();
+
                         if (!city.getCityBuildingsList().contains(building)) {
                             city.getCityBuildingsList().add(building);
 
@@ -412,7 +429,10 @@ public class ClientListener extends PacketListener {
                     StructureCity city = (StructureCity) tile.getStructure();
                     city.setHappiness(packet.getCity().getHappiness());
                     city.setPopulation(packet.getCity().getPopulation());
-                    city.setLevel(packet.getCity().getLevel());
+                    if (city.getLevel() != packet.getCity().getLevel()) {
+                        city.setLevel(packet.getCity().getLevel());
+                        city.upgrade(tile, server);
+                    }
                     city.setCityBuildingsList(packet.getCity().getCityBuildingsList());
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Updated CITY " + city.getName() + " / " + city.getPopulation() + HexaServer.WhatAmI(server));
                 }
