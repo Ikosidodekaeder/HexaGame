@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameUI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
@@ -8,6 +9,7 @@ import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
 
 /**
  * Created by Johannes on 25.02.2018.
@@ -28,10 +30,11 @@ public class StatusBar {
 
 
     public UILabel labelClaims = new UILabel(10,level,200,StatusHeight,32,"Claims: ?");
-    public UILabel labelPopulation = new UILabel(100,level,200,StatusHeight,32,"Population: 0");
-    public UILabel labelUnemployed = new UILabel(200,level,200,StatusHeight,32,"Unemployed: 0");
+    public UILabel labelMoney = new UILabel(180,level,200,StatusHeight,30,"Money: 0");
+    public UILabel labelPopulation = new UILabel(380,level,200,StatusHeight,30,"Population: 0");
+    public UILabel labelUnemployed = new UILabel(650,level,200,StatusHeight,30,"Unemployed: 0");
 
-    public final UILabel PlayerID = new UILabel(775,level,200,StatusHeight,16,GameManager.instance.server.getLocalClientID().toString());
+    public final UILabel PlayerID = new UILabel(875,level,200,StatusHeight,16,GameManager.instance.server.getLocalClientID().toString());
     public IngameMenu  MainMenu;
 
 
@@ -54,6 +57,54 @@ public class StatusBar {
             }
         });
 
+        labelMoney.setUpdateEvent(new UpdateEvent(){
+
+            @Override
+            public void onUpdate() {
+                labelMoney.getLabel().setText(
+                        "Money: " + GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().claims
+                );
+            }
+        });
+
+        labelPopulation.setUpdateEvent(new UpdateEvent(){
+
+            @Override
+            public void onUpdate() {
+                labelPopulation.getLabel().setText(
+                        "Population: " + GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().population
+                );
+            }
+        });
+
+        labelUnemployed.setUpdateEvent(new UpdateEvent(){
+
+            @Override
+            public void onUpdate() {
+                Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
+                int unemployed = player.population - player.jobs;
+                if (unemployed < 0) {
+                    labelUnemployed.getLabel().getStyle().fontColor = Color.GRAY;
+                    labelUnemployed.getLabel().setText(
+                            "Jobs: " + Math.abs(unemployed)
+                    );
+                    return;
+                }
+                if (unemployed > 500) {
+                    labelUnemployed.getLabel().getStyle().fontColor = Color.RED;
+                } else if (unemployed > 100) {
+                    labelUnemployed.getLabel().getStyle().fontColor = Color.ORANGE;
+                } else if (unemployed < 10) {
+                    labelUnemployed.getLabel().getStyle().fontColor = Color.GREEN;
+                } else {
+                    labelUnemployed.getLabel().getStyle().fontColor = Color.WHITE;
+                }
+                labelUnemployed.getLabel().setText(
+                        "Unemployed: " + unemployed
+                );
+            }
+        });
+
 
 
         PlayerID.setUpdateEvent(new UpdateEvent() {
@@ -64,6 +115,9 @@ public class StatusBar {
         });
 
         Top.add(labelClaims,stage);
+        Top.add(labelMoney,stage);
+        Top.add(labelPopulation,stage);
+        Top.add(labelUnemployed,stage);
         Top.add(PlayerID,stage);
         Top.add(MainMenu.Menu,stage);
         Top.updateElements();

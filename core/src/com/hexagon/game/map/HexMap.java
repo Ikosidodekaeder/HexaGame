@@ -23,12 +23,16 @@ import java.util.UUID;
 
 public class HexMap {
 
+    public static int DEFAULT_JOBS = 100;
+
     private Hexagon hexagon; // reference hexagon
 
     private Tile[][] tiles;
     private Chunk[][] chunks;
 
     private transient List<StructureCity> cities = new ArrayList<>();
+    // Tiles that someone has built on (for faster querying only)
+    private transient List<Tile> builtTiles = new ArrayList<>();
 
 
     public HexMap(int sizeX, int sizeY) {
@@ -116,6 +120,23 @@ public class HexMap {
         return chunks;
     }
 
+    public int getJobs(UUID owner) {
+        int jobs = DEFAULT_JOBS;
+        for (int i=0; i<builtTiles.size(); i++) {
+            Tile tile = builtTiles.get(i);
+            if (tile.getOwner() != null
+                    && tile.getOwner().equals(owner)
+                    && tile.getStructure() != null) {
+                if (tile.getStructure() instanceof StructureCity) {
+                    jobs += ((StructureCity) tile.getStructure()).getJobs();
+                } else {
+                    jobs += tile.getStructure().getType().getJobs();
+                }
+            }
+        }
+        return jobs;
+    }
+
     public void build(int x, int y, StructureType type, UUID owner) {
         Tile tile = GameManager.instance.getGame().getCurrentMap().getTileAt(x, y);
         RenderTile renderTile = tile.getRenderTile();
@@ -185,12 +206,18 @@ public class HexMap {
             ));
             model.move((float) loc.getX(), 0.001f, (float) loc.getY());
             renderTile.getStructures().add(model);
+            tile.setStructure(new Structure(type));
         } else if (type == StructureType.FACTORY) {
             HexModel model = new HexModel(new ModelInstance(
                     ModelManager.getInstance().getStructureModels().get(StructureType.FACTORY).get(0)
             ));
             model.move((float) loc.getX(), 0.001f, (float) loc.getY());
             renderTile.getStructures().add(model);
+            tile.setStructure(new Structure(type));
+        }
+
+        if (owner != null) {
+            GameManager.instance.getGame().getCurrentMap().getBuiltTiles().add(tile);
         }
     }
 
@@ -199,9 +226,17 @@ public class HexMap {
         RenderTile renderTile = tile.getRenderTile();
         tile.setStructure(null);
         renderTile.getStructures().clear();
+
+        if (tile.getOwner() != null && builtTiles.contains(tile)) {
+            builtTiles.remove(tile);
+        }
     }
 
     public List<StructureCity> getCities() {
         return cities;
+    }
+
+    public List<Tile> getBuiltTiles() {
+        return builtTiles;
     }
 }

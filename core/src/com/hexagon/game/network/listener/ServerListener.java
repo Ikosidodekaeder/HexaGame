@@ -4,9 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.menu.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.menu.ScreenMainMenu;
-import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.map.HexMap;
@@ -17,7 +17,6 @@ import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
-import com.hexagon.game.network.packets.PacketHostGenerating;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
@@ -156,7 +155,7 @@ public class ServerListener extends PacketListener {
                         StructureCity city = (StructureCity) tile.getStructure();
 
                         if (!city.getCityBuildingsList().contains(packet.getBuilding())) {
-                            city.getCityBuildingsList().add(packet.getBuilding());
+                            city.addBuilding(packet.getBuilding());
 
                             // Confirm the CityBuild Packet
                             // (The router sends it to all clients)

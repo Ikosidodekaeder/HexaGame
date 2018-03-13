@@ -1,7 +1,6 @@
 package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -60,9 +59,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
-import de.svdragster.logica.components.meta.ComponentType;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.util.SystemNotifications.NotificationUpdate;
@@ -506,9 +505,13 @@ public class ScreenGame extends HexagonScreen {
                 && gameManager.server.isHost()) {
             updateCityTime += delta;
 
-            if (updateCityTime >= 5.0f) {
+            if (updateCityTime >= 2.5f) {
                 updateCityTime = 0;
                 // Update cities
+                for (UUID uuid : gameManager.server.getSessionData().PlayerList.keySet()) {
+                    GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond().population = 0;
+                }
+                // Update all cities and calculate total amount of population
                 for (int i = 0; i < currentMap.getCities().size(); i++) {
                     StructureCity city = currentMap.getCities().get(i);
                     if (city.update()) {
@@ -517,6 +520,13 @@ public class ScreenGame extends HexagonScreen {
                         );
                     }
                 }
+                // Calculate the total amount of population first and then calculate the happiness
+                // Happiness depends on population and available jobs
+                for (int i = 0; i < currentMap.getCities().size(); i++) {
+                    StructureCity city = currentMap.getCities().get(i);
+                    city.calculateHappiness();
+                }
+
             }
         }
     }

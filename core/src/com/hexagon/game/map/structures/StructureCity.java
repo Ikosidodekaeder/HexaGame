@@ -5,6 +5,7 @@ import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 public class StructureCity extends Structure {
 
-    private static final float DEFAULT_HAPPINESS = 0.45f;
+    private static final float DEFAULT_HAPPINESS = 0.49f;
 
     public static String[] names = new String[] {
             "Nürnberg",
@@ -47,7 +48,7 @@ public class StructureCity extends Structure {
     private transient Point arrayPosition;
     private String name;
     private int level = 0;
-    private float population = 500;
+    private float population = 125;
     private float happiness = DEFAULT_HAPPINESS;
     private UUID owner;
     private List<CityBuildings> cityBuildingsList = new ArrayList<>();
@@ -110,8 +111,15 @@ public class StructureCity extends Structure {
     }
 
     public int getMaxPopulation() {
-        // ((level + 1)^3)*1000
-        return (int) (Math.pow(level + 1, 3)*1000);
+        // ((level + 1)^2)*1000
+        return (int) (Math.pow(level + 1, 2)*250);
+    }
+
+    public void addBuilding(CityBuildings building) {
+        if (cityBuildingsList.contains(building)) {
+            return;
+        }
+        cityBuildingsList.add(building);
     }
 
     public List<CityBuildings> getCityBuildingsList() {
@@ -123,26 +131,39 @@ public class StructureCity extends Structure {
     }
 
     public void calculateHappiness() {
+        if (owner == null) return;
         float newHappiness = DEFAULT_HAPPINESS;
         for (int i=0; i<cityBuildingsList.size(); i++) {
             newHappiness += cityBuildingsList.get(i).getHappinessAdd();
         }
+        Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
+        int unemployed = player.population - player.jobs;
+
+        System.out.println(unemployed);
+        if (unemployed > 0) {
+            newHappiness -= unemployed * 0.0005;
+        }
+
         setHappiness(newHappiness);
     }
 
     public boolean update() {
         if (owner == null) return false;
-        calculateHappiness();
 
-        float populationAdd = (happiness - 0.5f)*2000;
+        float populationAdd = (happiness - 0.5f)*300;
         population += populationAdd;
         int maxPopulation = getMaxPopulation();
         if (population > maxPopulation) {
             population = maxPopulation;
         } else if (population < 0) {
             population = 0;
-            GameManager.instance.messageUtil.add("You lost the game!", 4_000, Color.RED);
-            GameManager.instance.messageUtil.add("No population left!", 4_000, Color.RED);
+            if (owner != null && owner.equals(HexaServer.senderId)) {
+                GameManager.instance.messageUtil.add("You lost the game:", 4_000, Color.RED);
+                GameManager.instance.messageUtil.add("No population left!", 4_000, Color.RED);
+            }
+        }
+        if (owner != null) {
+            GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond().population += population;
         }
         return true;
     }
@@ -168,6 +189,14 @@ public class StructureCity extends Structure {
                     server.getSessionData().PlayerList.get(tile.getOwner()).getSecond().username
                             + " has upgraded " + getName(), 8000, Color.RED);
         }
+    }
+
+    public int getJobs() {
+        int jobs = 0;
+        for (int i=0; i<cityBuildingsList.size(); i++) {
+            jobs += cityBuildingsList.get(i).getJobs();
+        }
+        return jobs;
     }
 
     public Point getArrayPosition() {

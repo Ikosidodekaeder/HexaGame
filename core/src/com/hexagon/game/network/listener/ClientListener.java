@@ -160,7 +160,7 @@ public class ClientListener extends PacketListener {
                             if (packet.getBuilding() == null) {
                                 // Upgrade City
                                 ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"level " + city.getLevel());
-                                if (city.getLevel() >= 5) {
+                                if (city.getLevel() >= 4) {
                                     return;
                                 }
                                 city.setLevel(city.getLevel()+1);
@@ -172,7 +172,7 @@ public class ClientListener extends PacketListener {
                         CityBuildings building = packet.getBuilding();
 
                         if (!city.getCityBuildingsList().contains(building)) {
-                            city.getCityBuildingsList().add(building);
+                            city.addBuilding(building);
 
                             GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
                             GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
@@ -198,8 +198,7 @@ public class ClientListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND," Received BUILD " + packetBuild.getArrayPosition().getX() + ", " + packetBuild.getArrayPosition().getY()
                             + " -> " + packetBuild.getStructureType().name() + HexaServer.WhatAmI(server));
 
-                    if(server.isHost() && packetBuild.getStructureType() != StructureType.CITY)
-                    {
+                    if(server.isHost() && packetBuild.getStructureType() != StructureType.CITY) {
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received Build Packet for: " + packetBuild.getOwner() + "|| I am: "+HexaServer.senderId + HexaServer.WhatAmI(server));
                         ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"    Build structure: " + packetBuild.getStructureType() + " at " + packetBuild.getArrayPosition());
 
@@ -282,6 +281,7 @@ public class ClientListener extends PacketListener {
                         return;
                     }
 
+                    Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
                     if (packetBuild.getStructureType() == StructureType.CITY) {
                         StructureCity city = (StructureCity) map.getTileAt(pos).getStructure();
                         city.setOwner(packetBuild.getOwner());
@@ -294,13 +294,15 @@ public class ClientListener extends PacketListener {
                                         "Congratulations on your new town", 7000, Color.SKY);
                             }
                         } else {
-                            Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
                             GameManager.instance.messageUtil.add(
                                     player.username + " has aquired " + city.getName(), 7000, player.color);
                         }
                     }
 
                     map.build(pos.getX(), pos.getY(), packetBuild.getStructureType(), packetBuild.getOwner());
+
+                    player.jobs = map.getJobs(packetBuild.getOwner());
+
                     GameManager.instance.getInputGame().updateSelectedInfo();
                 }
             });

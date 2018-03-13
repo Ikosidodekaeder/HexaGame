@@ -98,7 +98,7 @@ public class SidebarCityStats extends Sidebar {
     }
 
     private void upgradeButton(final Stage stage, final StructureCity city) {
-        if (city.getPopulation() >= city.getMaxPopulation()*0.501) {
+        if (city.getPopulation() >= city.getMaxPopulation()*0.99) {
             UiButton uiButton = new UiButton("[Upgrade City]", 5, 0, 0, 0, 42);
             uiButton.getTextButton().getStyle().fontColor = Color.LIME;
             statusWindow.add(uiButton, stage);
