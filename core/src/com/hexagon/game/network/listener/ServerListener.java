@@ -17,6 +17,7 @@ import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketDestroy;
+import com.hexagon.game.network.packets.PacketHostGenerating;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketLeave;
@@ -24,6 +25,7 @@ import com.hexagon.game.network.packets.PacketPlayerLoaded;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
+import com.hexagon.game.network.packets.PacketTradeMoney;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.ConsoleColours;
 
@@ -311,13 +313,17 @@ public class ServerListener extends PacketListener {
                     server.send(new PacketPlayerStatus(
                             HexaServer.senderId,player.PlayerID,player.Stats
                     ));
-                    //GameManager.instance.setPlayerResources(player.Stats);
+                }
+            });
 
-                    /*if(server.isHost() && player.PlayerID.equals( HexaServer.senderId))
-                        ;GameManager.instance.setPlayerResources(player.Stats);
-                    else
-                        server.send(player);*/
+            put(PacketType.TRADEMONEY, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketTradeMoney packet = (PacketTradeMoney) args[0];
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADEMONEY"+ HexaServer.WhatAmI(server));
 
+                    //Sendback to client listner
+                    server.send(packet);
                 }
             });
         }};

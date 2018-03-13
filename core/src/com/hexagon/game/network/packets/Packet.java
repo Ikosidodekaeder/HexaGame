@@ -193,6 +193,13 @@ public abstract class Packet {
              }
              case TRADEMONEY:{
                  String[] values = arr[offset].split(",");
+                 if(values[0].length() == 0)
+                     return new PacketTradeMoney(
+                             null,
+                             UUID.fromString(values[1]),
+                             HexaComponents.valueOf(values[2]),
+                             Integer.parseInt(values[3])
+                     );
                  return new PacketTradeMoney(
                          UUID.fromString(values[0]),
                          UUID.fromString(values[1]),

@@ -26,4 +26,15 @@ public class PacketTradeMoney extends Packet {
         this.type = type;
         this.originAmount = originAmount;
     }
+
+
+    @Override
+    public String serialize() {
+        if(dest == null){
+            return super.serialize()
+                    + "" + "," + source + "," + type + ","+ originAmount+";";
+        }
+        return super.serialize()
+                + dest.toString() + "," + source + "," + type + ","+ originAmount+";";
+    }
 }

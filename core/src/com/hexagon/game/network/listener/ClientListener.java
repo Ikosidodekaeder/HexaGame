@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.Logic.Components.HexaComponentOre;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentStone;
+import com.hexagon.game.Logic.Components.HexaComponentTrade;
 import com.hexagon.game.Logic.Components.HexaComponentWood;
+import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.menu.ScreenJoin;
@@ -38,15 +40,18 @@ import com.hexagon.game.network.packets.PacketPlayerLoaded;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.network.packets.PacketServerList;
+import com.hexagon.game.network.packets.PacketTradeMoney;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.ComponentProducer;
 import de.svdragster.logica.components.ComponentResource;
+import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.Delegate;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
@@ -326,21 +331,14 @@ public class ClientListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received Packet for(PLAYERID): " + player.PlayerID + "|| I am(SERVERID): "+HexaServer.senderId  + HexaServer.WhatAmI(server));
                     ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"   It contains this payload: " + player.Stats + HexaServer.WhatAmI(server));
 
-
-                    /*if(player.PlayerID == player.getSenderId())
-                        System.out.println("Status for HOST");
-                    else
-                        System.out.println("Status for Client");
-                        */
-
                     if(player.PlayerID.equals(HexaServer.senderId)){
                         ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"        Set given stats for:" + player.PlayerID + "|| I am: " + HexaServer.WhatAmI(server));
 
                         GameManager.instance.setPlayerResources(player.Stats);
                     }
-                      //if(!server.isHost())
-                        //GameManager.instance.setPlayerResources(player.Stats);
-
+                    if(player.PlayerID.equals(GameManager.instance.GlobalMarketID)){
+                        GameManager.instance.setGlobalMarketResources(player.Stats);
+                    }
 
                 }
             });
@@ -482,6 +480,34 @@ public class ClientListener extends PacketListener {
 
                     System.out.println();
                     ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
+                }
+            });
+
+            put(PacketType.TRADEMONEY, new Delegate() {
+                @Override
+                public void invoke(Object... args) throws Exception {
+                    PacketTradeMoney packet = (PacketTradeMoney) args[0];
+                    ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADEMONEY"+ HexaServer.WhatAmI(server));
+
+                    if(server.isHost()){
+                        List<Component> PossiblePlayer = Engine.getInstance().getComponentManager().groupByType(HexaComponents.OWNER);
+                        Entity Market = server.getSessionData().PlayerList.get(GameManager.instance.GlobalMarketID).getFirst();
+                        Entity source = server.getSessionData().PlayerList.get(packet.source).getFirst();
+
+                        Engine.getInstance().BroadcastMessage(
+                                new NotificationNewEntity(
+                                        Engine.getInstance().getEntityManager().createID(
+                                                new HexaComponentTrade(
+                                                        Market,
+                                                        source,
+                                                        packet.type,
+                                                        packet.originAmount
+                                                )
+                                        )
+                                )
+                        );
+                    }
+
                 }
             });
 

@@ -11,7 +11,6 @@ import java.util.UUID;
 public class PacketPlayerStatus extends Packet {
 
     public Map<String,Integer> Stats = new Hashtable<>();
-
     public UUID PlayerID;
 
     public PacketPlayerStatus() {

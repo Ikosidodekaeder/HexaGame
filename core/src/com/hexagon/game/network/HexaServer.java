@@ -1,6 +1,7 @@
 package com.hexagon.game.network;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
@@ -93,6 +94,14 @@ public class HexaServer {
         sessionData = new SessionData();
         sessionData.addNewPlayer(HexaServer.senderId,"OFFLINE_HOST",
                 new Player(GameManager.instance.colorUtil.getNext(), HexaServer.username));
+        getSessionData().addNewPlayer(
+                GameManager.instance.GlobalMarketID,
+                "Market",
+                new Player(
+                        new Color(0x00ff00),
+                        "Market"
+                )
+        );
 
         socket = new Socket(); // Just an empty socket instance to prevent nullpointers
         offlineGame = true;

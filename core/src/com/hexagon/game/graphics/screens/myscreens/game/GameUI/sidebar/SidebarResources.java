@@ -2,7 +2,10 @@ package com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.Logic.Components.HexaComponentTrade;
 import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
@@ -10,6 +13,15 @@ import com.hexagon.game.graphics.ui.UiElement;
 import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
+import com.hexagon.game.network.packets.PacketPlayerStatus;
+import com.hexagon.game.network.packets.PacketTradeMoney;
+
+import java.util.Iterator;
+
+import de.svdragster.logica.manager.Entity.Entity;
+import de.svdragster.logica.util.Pair;
 
 /**
  * Created by Sven on 01.03.2018.
@@ -45,9 +57,37 @@ public class SidebarResources extends Sidebar {
             }
         });
 
-        UiResourceTrade oreTrade = new UiResourceTrade(OreResource.getHeight());
-        UiResourceTrade woodTrade = new UiResourceTrade(OreResource.getHeight());
-        UiResourceTrade stoneTrade = new UiResourceTrade(OreResource.getHeight());
+        UiResourceTrade oreTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.ORE);
+        UiResourceTrade woodTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.WOOD);
+        UiResourceTrade stoneTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.STONE);
+
+        oreTrade.getSell().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.ORE,
+                                -5
+                        )
+                );
+            }
+        });
+
+        oreTrade.getBuy().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.ORE,
+                                5
+                        )
+                );
+            }
+        });
 
         statusWindow.add(OreResource, stage);
         statusWindow.add(oreTrade, stage);
@@ -78,26 +118,38 @@ public class SidebarResources extends Sidebar {
         private UILabel     label;
         private UiButton    sell;
         private UILabel     price;
+        private UILabel     available;
 
-        private UiElement[] elements = new UiElement[4];
+        private UiElement[] elements = new UiElement[5];
 
 
-        public UiResourceTrade(float height) {
+        public UiResourceTrade(float height,final HexaComponents type) {
             super(0, 0, 100, 0);
             buy = new UiButton("Buy", 0, 0, 0, 0, 28);
             buy.getTextButton().getStyle().fontColor = new Color(0.3f, 0.8f, 0.3f, 1);
 
-            label = new UILabel(0, 0, 0, 0, 28, " (100) ");
+            label = new UILabel(0, 0, 0, 0, 28, " - ");
 
             sell = new UiButton("Sell", 0, 0, 0, 0, 28);
             sell.getTextButton().getStyle().fontColor = new Color(0.85f, 0.3f, 0.3f, 1);
 
             price = new UILabel(0, 0, 0, 0, 28, " 50$ ");
 
+            available = new UILabel(0,0,0,0,28,"----");;
+
+            available.setUpdateEvent(new UpdateEvent() {
+                @Override
+                public void onUpdate() {
+                    available.getLabel().setText(" | Available: "+GameManager.instance.getGlobalMarketResources().get(type.toString()).toString());
+                }
+            });
+
             elements[0] = buy;
             elements[1] = label;
             elements[2] = sell;
             elements[3] = price;
+            elements[4] = available;
+
 
             setHeight(height);
         }
@@ -171,6 +223,14 @@ public class SidebarResources extends Sidebar {
             super.setDisplayY(displayY);
             for (UiElement element : elements) {
                 element.setDisplayY(displayY);
+            }
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            for (UiElement element : elements) {
+                element.update();
             }
         }
 

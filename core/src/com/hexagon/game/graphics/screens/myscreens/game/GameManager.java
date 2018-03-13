@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Sven on 16.02.2018.
@@ -46,6 +47,14 @@ public class GameManager {
     private InputGame       inputGame;
     public  ColorUtil       colorUtil;
     public  MessageUtil     messageUtil;
+
+    //It's the easiest way: quick and dirty yeah...please let no one ever read this piece of code...
+    public final UUID       GlobalMarketID = UUID.fromString("26420bf8-982f-4a46-aef1-c79c655b82d6");
+    private Map<String,Integer> GlobalMarketResources = new Hashtable<String,Integer>() {{
+        put("STONE",    0);
+        put("WOOD",     0);
+        put("ORE",      0);
+    }};
 
     public List<State>      states = new ArrayList<>();
     public State            currentState;
@@ -157,6 +166,19 @@ public class GameManager {
                     "HOST_" + HexaServer.username,
                     player
             );
+
+
+
+            server.getSessionData().addNewPlayer(
+                    GlobalMarketID,
+                    "Market",
+                    new Player(
+                            new Color(0x00ff00),
+                            "Market"
+                    )
+            );
+
+
         } else {
             //HexaServer.senderId = UUID.fromString("a25183d9-1a5a-40e1-a712-e3099282c349");
         }
@@ -271,6 +293,15 @@ public class GameManager {
 
     public void setPlayerResources(Map<String, Integer> playerResources) {
         PlayerResources = playerResources;
+    }
+
+
+    public Map<String, Integer> getGlobalMarketResources() {
+        return GlobalMarketResources;
+    }
+
+    public void setGlobalMarketResources(Map<String, Integer> globalMarketResources) {
+        GlobalMarketResources = globalMarketResources;
     }
 
     public GroupWindow getStandardWindow() {

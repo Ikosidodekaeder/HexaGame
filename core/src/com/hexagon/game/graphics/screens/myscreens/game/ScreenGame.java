@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +27,11 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.UBJsonReader;
+import com.hexagon.game.Logic.Components.HexaComponentOre;
+import com.hexagon.game.Logic.Components.HexaComponentOwner;
+import com.hexagon.game.Logic.Components.HexaComponentStone;
+import com.hexagon.game.Logic.Components.HexaComponentWood;
+import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -47,6 +53,7 @@ import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketCityUpdate;
+import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
 
 import java.util.ArrayList;
@@ -54,6 +61,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.svdragster.logica.components.Component;
+import de.svdragster.logica.components.meta.ComponentType;
+import de.svdragster.logica.manager.Entity.Entity;
+import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
 
 /**
@@ -112,12 +123,47 @@ public class ScreenGame extends HexagonScreen {
 
     public ScreenGame() {
         super(ScreenType.GAME);
+
+
         Logic = new Thread(new Runnable() {
             @Override
             public void run() {
+
+                boolean init = false;
+
+
                 while(isRunning){
                     Engine.getInstance().run(0.032f);
                     //ConsoleColours.Print(ConsoleColours.BLUE_BACKGROUND_BRIGHT,"LOGIC HAS RUN");
+                    if(!init){
+                        init = true;
+
+                        //From the session data retrieve the GlobalMarket Entity and
+                        //from the entity the HexaComponentOwner...
+                        HexaComponentOwner MarketOwner = ((HexaComponentOwner)
+                                GameManager.instance.server.getSessionData().PlayerList
+                                        .get(GameManager.instance.GlobalMarketID).getFirst()
+                                        .hasAssociationWith(HexaComponents.OWNER).getSecond());
+
+                        Entity Market = GameManager.instance.server.getSessionData().PlayerList
+                                .get(GameManager.instance.GlobalMarketID).getFirst();
+
+                        for(int i = 0; i < 100; i++){
+                            ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"                                               "+i);
+
+                            Component c = new HexaComponentOre();
+                            //c.setBackAssociation(Market);
+                            //Engine.getInstance().getComponentManager().add(c);
+                            Engine.getInstance().BroadcastMessage(
+                                   new NotificationNewEntity(
+                                           Engine.getInstance().getEntityManager().createID(
+                                                   c,
+                                                   MarketOwner
+                                           )
+                                   )
+                            );
+                        }
+                    }
                 }
             }
         });

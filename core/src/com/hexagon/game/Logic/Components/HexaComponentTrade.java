@@ -13,7 +13,7 @@ import de.svdragster.logica.manager.Entity.Entity;
 
 public class HexaComponentTrade extends Component {
 
-    public Entity                  Recipient;
+    public Entity GlobalMarket;
     public Entity                  Origin;
 
     public HexaComponents          OriginGood;
@@ -24,7 +24,7 @@ public class HexaComponentTrade extends Component {
     }
 
     public HexaComponentTrade(Entity dest,Entity source,HexaComponents type,long originAmount){
-        this.Recipient = dest;
+        this.GlobalMarket = dest;
         this.Origin = source;
         this.OriginGood = type;
         this.OriginAmount = originAmount;
@@ -33,7 +33,7 @@ public class HexaComponentTrade extends Component {
 
 
     public String ToString(){
-        return ((UUID)Recipient.hasAssociationWith(HexaComponents.OWNER).getSecond()).toString()
+        return ((UUID) GlobalMarket.hasAssociationWith(HexaComponents.OWNER).getSecond()).toString()
                 + ","
                 + ((UUID)Origin.hasAssociationWith(HexaComponents.OWNER).getSecond()).toString()
                 +","
