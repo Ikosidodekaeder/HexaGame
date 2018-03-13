@@ -65,6 +65,7 @@ import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.meta.ComponentType;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
+import de.svdragster.logica.util.SystemNotifications.NotificationUpdate;
 import de.svdragster.logica.world.Engine;
 
 /**
@@ -131,6 +132,61 @@ public class ScreenGame extends HexagonScreen {
 
                 boolean init = false;
 
+                //From the session data retrieve the GlobalMarket Entity and
+                //from the entity the HexaComponentOwner...
+                HexaComponentOwner MarketOwner = ((HexaComponentOwner)
+                        GameManager.instance.server.getSessionData().PlayerList
+                                .get(GameManager.instance.GlobalMarketID).getFirst()
+                                .hasAssociationWith(HexaComponents.OWNER).getSecond());
+
+                Entity Market = GameManager.instance.server.getSessionData().PlayerList
+                        .get(GameManager.instance.GlobalMarketID).getFirst();
+
+                for(int i = 0; i < 1000; i++){
+                    ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"                                               "+i);
+
+                    Component c = new HexaComponentOre();
+                    c.setBackAssociation(Market);
+                    //Engine.getInstance().getComponentManager().add(c);
+                    Engine.getInstance().BroadcastMessage(
+                            new NotificationNewEntity(
+                                    Engine.getInstance().getEntityManager().createID(
+                                            c,
+                                            MarketOwner
+                                    )
+                            )
+                    );
+
+                    c = new HexaComponentWood();
+                    c.setBackAssociation(Market);
+                    //Engine.getInstance().getComponentManager().add(c);
+                    Engine.getInstance().BroadcastMessage(
+                            new NotificationNewEntity(
+                                    Engine.getInstance().getEntityManager().createID(
+                                            c,
+                                            MarketOwner
+                                    )
+                            )
+                    );
+
+                    c = new HexaComponentStone();
+                    c.setBackAssociation(Market);
+                    //Engine.getInstance().getComponentManager().add(c);
+                    Engine.getInstance().BroadcastMessage(
+                            new NotificationNewEntity(
+                                    Engine.getInstance().getEntityManager().createID(
+                                            c,
+                                            MarketOwner
+                                    )
+                            )
+                    );
+
+
+                }
+
+                Engine.getInstance().BroadcastMessage(
+                        new NotificationUpdate()
+                );
 
                 while(isRunning){
                     Engine.getInstance().run(0.032f);
@@ -138,31 +194,7 @@ public class ScreenGame extends HexagonScreen {
                     if(!init){
                         init = true;
 
-                        //From the session data retrieve the GlobalMarket Entity and
-                        //from the entity the HexaComponentOwner...
-                        HexaComponentOwner MarketOwner = ((HexaComponentOwner)
-                                GameManager.instance.server.getSessionData().PlayerList
-                                        .get(GameManager.instance.GlobalMarketID).getFirst()
-                                        .hasAssociationWith(HexaComponents.OWNER).getSecond());
 
-                        Entity Market = GameManager.instance.server.getSessionData().PlayerList
-                                .get(GameManager.instance.GlobalMarketID).getFirst();
-
-                        for(int i = 0; i < 100; i++){
-                            ConsoleColours.Print(ConsoleColours.RED_BACKGROUND,"                                               "+i);
-
-                            Component c = new HexaComponentOre();
-                            //c.setBackAssociation(Market);
-                            //Engine.getInstance().getComponentManager().add(c);
-                            Engine.getInstance().BroadcastMessage(
-                                   new NotificationNewEntity(
-                                           Engine.getInstance().getEntityManager().createID(
-                                                   c,
-                                                   MarketOwner
-                                           )
-                                   )
-                            );
-                        }
                     }
                 }
             }

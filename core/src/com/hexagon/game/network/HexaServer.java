@@ -12,6 +12,7 @@ import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
+import com.hexagon.game.network.packets.PacketTradeMoney;
 import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.Usernames;
 
@@ -158,7 +159,7 @@ public class HexaServer {
         if (isHost() && packet.getSenderId().equals(HexaServer.senderId)
                 && packet.getType() != PacketType.KEEPALIVE) {
             try {
-                if (packet instanceof PacketCityBuild) {
+                if (packet instanceof PacketTradeMoney) {
                     System.out.println("_____ " + packet.getType().name());
                 }
                 clientListener.call(packet);

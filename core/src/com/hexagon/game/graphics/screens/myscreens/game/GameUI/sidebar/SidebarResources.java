@@ -69,7 +69,7 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.ORE,
-                                -5
+                                -50
                         )
                 );
             }
@@ -78,12 +78,69 @@ public class SidebarResources extends Sidebar {
         oreTrade.getBuy().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.messageUtil.add("button");
                 GameManager.instance.server.send(
                         new PacketTradeMoney(
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.ORE,
-                                5
+                                25
+                        )
+                );
+            }
+        });
+
+        woodTrade.getSell().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.WOOD,
+                                -50
+                        )
+                );
+            }
+        });
+
+        woodTrade.getBuy().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.WOOD,
+                                50
+                        )
+                );
+            }
+        });
+
+        stoneTrade.getSell().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.STONE,
+                                -50
+                        )
+                );
+            }
+        });
+
+        stoneTrade.getBuy().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.STONE,
+                                50
                         )
                 );
             }

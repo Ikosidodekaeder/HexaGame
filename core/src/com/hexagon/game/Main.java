@@ -60,28 +60,7 @@ public class Main extends Game {
         engine = Engine.getInstance();
         engine.getSystemManager().addSystem(
 				new SystemMessageDelivery(),
-				new System() {
 
-					@Override
-					public void process(double delta) {
-						for(Entity e: getLocalEntityCache())
-							;//java.lang.System.out.println("----------->Resource: " + e.toString());
-							;//java.lang.System.out.println("----------->Producer: " + e.toString());
-					}
-
-					@Override
-					public void update(Observable observable, Object o) {
-						setGlobalEntityContext(engine.getEntityManager());
-						if(o instanceof NotificationNewEntity){
-							NotificationNewEntity e = (NotificationNewEntity)o;
-
-							if(((NotificationNewEntity) o).isOfType(StdComponents.RESOURCE)){
-								this.getLocalEntityCache().add(e.getEntity());
-								//GameManager.instance.server.getSessionData().
-							}
-						}
-					}
-				},
 				new HexaSystemGeneralProducer(engine),
 				new HexaSystemGeneralConsumer(engine),
 				new HexaSystemMoneyTrader(engine)

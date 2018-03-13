@@ -16,6 +16,7 @@ import de.svdragster.logica.system.SystemProducerBase;
 import de.svdragster.logica.util.Pair;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.util.SystemNotifications.NotificationRemoveEntity;
+import de.svdragster.logica.util.SystemNotifications.NotificationUpdate;
 import de.svdragster.logica.world.Engine;
 
 /**
@@ -52,6 +53,10 @@ public class HexaSystemGeneralProducer extends SystemProducerBase {
     @Override
     public void update(Observable observable, Object o) {
 
+        if(o instanceof NotificationUpdate){
+            List<Entity> global = getGlobalEntityContext().getEntityContext();
+
+        }
         if(o instanceof NotificationNewEntity)
         {
             NotificationNewEntity e = (NotificationNewEntity) o;

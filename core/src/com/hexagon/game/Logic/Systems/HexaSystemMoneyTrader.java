@@ -77,6 +77,7 @@ public class HexaSystemMoneyTrader extends System {
 
         ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,"Try to collect " +amount + " " + GoodType);
         ConsoleColours.Print(ConsoleColours.GREEN_BACKGROUND,">>> For Player: "+ Owner + " -> " + OwnerCredentials.name);
+
         for(int j = 0; j < getGlobalEntityContext().getEntityContext().size() ; j++){
             Entity Good = getGlobalEntityContext().getEntityContext().get(j);
             //Check if Entity is a Resource
@@ -85,7 +86,8 @@ public class HexaSystemMoneyTrader extends System {
                     HexaComponents.OWNER
             );
 
-            if(Good.getComponentSignature().equals(Entity.Signature.calculateSignature(sig))){
+            if(Good.getComponentSignature().equals(Entity.Signature.calculateSignature(sig)))
+            {
                 //Check if the Owner of the Resource is OUR owner
 
                 Pair<Boolean,HexaComponentOwner> res = Good.hasAssociationWith(HexaComponents.OWNER);
@@ -119,7 +121,7 @@ public class HexaSystemMoneyTrader extends System {
                 NewOwner
         );
 
-        NewOwner.setBackAssociation(source);
+        //NewOwner.setBackAssociation(source);
         source.generateSignature();
         return OldOwner;
     }
@@ -130,6 +132,7 @@ public class HexaSystemMoneyTrader extends System {
         boolean isBuyer = true;
         List<Entity>  goodsOfOrigin;
 
+        //ConsoleColours.Print(ConsoleColours.RED_BOLD,Integer.toString(getLocalEntityCache().size()) + "shit");
         for(int i = 0; i < getLocalEntityCache().size(); i++){
             Entity Trade = getLocalEntityCache().get(i);
 
@@ -174,10 +177,11 @@ public class HexaSystemMoneyTrader extends System {
                     ConsoleColours.Print(ConsoleColours.PURPLE_BACKGROUND_BRIGHT,"Collect GOODS COUNT: " + String.valueOf(goodsOfOrigin.size()));
                     if(isBuyer)
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().Origin);
+                            ConsoleColours.Print(ConsoleColours.BLUE_BOLD,"Changed Owner From: " +
+                                    changeOwnerOf(goodsOfOrigin.get(j),legal.getSecond().Origin).name + " to " + legal.getSecond().GlobalMarket);
                     else
                         for(int j = 0; j < goodsOfOrigin.size(); j++)
-                            changeOwnerOf(goodsOfOrigin.get(i),legal.getSecond().GlobalMarket);
+                            changeOwnerOf(goodsOfOrigin.get(j),legal.getSecond().GlobalMarket);
 
 
                     if(isBuyer)
