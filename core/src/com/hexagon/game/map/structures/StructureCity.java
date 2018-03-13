@@ -8,6 +8,7 @@ import com.hexagon.game.network.HexaServer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Sven on 05.03.2018.
@@ -48,8 +49,8 @@ public class StructureCity extends Structure {
     private int level = 0;
     private float population = 500;
     private float happiness = DEFAULT_HAPPINESS;
+    private UUID owner;
     private List<CityBuildings> cityBuildingsList = new ArrayList<>();
-
 
 
 
@@ -61,6 +62,14 @@ public class StructureCity extends Structure {
     public StructureCity(int level) {
         super(StructureType.CITY);
         this.level = level;
+    }
+
+    public UUID getOwner() {
+        return owner;
+    }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
     }
 
     public int getLevel() {
@@ -122,7 +131,7 @@ public class StructureCity extends Structure {
     }
 
     public boolean update() {
-        if (cityBuildingsList.isEmpty()) return false;
+        if (owner == null) return false;
         calculateHappiness();
 
         float populationAdd = (happiness - 0.5f)*2000;
@@ -130,6 +139,10 @@ public class StructureCity extends Structure {
         int maxPopulation = getMaxPopulation();
         if (population > maxPopulation) {
             population = maxPopulation;
+        } else if (population < 0) {
+            population = 0;
+            GameManager.instance.messageUtil.add("You lost the game!", 4_000, Color.RED);
+            GameManager.instance.messageUtil.add("No population left!", 4_000, Color.RED);
         }
         return true;
     }

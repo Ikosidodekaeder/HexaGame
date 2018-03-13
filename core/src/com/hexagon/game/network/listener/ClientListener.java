@@ -271,10 +271,15 @@ public class ClientListener extends PacketListener {
 
                     Point pos = packetBuild.getArrayPosition();
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
-
-
+                    Tile tile = map.getTileAt(pos);
+                    if (tile.getOwner() != null
+                            && !tile.getOwner().equals(packetBuild.getOwner())) {
+                        return;
+                    }
 
                     if (packetBuild.getStructureType() == StructureType.CITY) {
+                        StructureCity city = (StructureCity) map.getTileAt(pos).getStructure();
+                        city.setOwner(packetBuild.getOwner());
                         if (packetBuild.getOwner().equals(HexaServer.senderId)) {
                             if (GameManager.instance.getCurrentState().getStateType() == StateType.START_OF_GAME) {
                                 GameManager.instance.setCurrentState(StateType.MAIN_GAME);
@@ -284,7 +289,6 @@ public class ClientListener extends PacketListener {
                                         "Congratulations on your new town", 7000, Color.SKY);
                             }
                         } else {
-                            StructureCity city = (StructureCity) map.getTileAt(pos).getStructure();
                             Player player = server.getSessionData().PlayerList.get(packetBuild.getOwner()).getSecond();
                             GameManager.instance.messageUtil.add(
                                     player.username + " has aquired " + city.getName(), 7000, player.color);

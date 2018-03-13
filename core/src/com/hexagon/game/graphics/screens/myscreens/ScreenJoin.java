@@ -96,7 +96,7 @@ public class ScreenJoin extends HexagonScreen {
          */
 
         UiButton buttonServers = new UiButton("Servers", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonHostGame = new UiButton("Host Game", 20, buttonServers.getY() - 80, 50, 40);
+        //UiButton buttonHostGame = new UiButton("Host Game", 20, buttonServers.getY() - 80, 50, 40);
 
         buttonServers.addListener(new ChangeListener() {
             @Override
@@ -113,15 +113,15 @@ public class ScreenJoin extends HexagonScreen {
             }
         });
 
-        buttonHostGame.addListener(new ChangeListener() {
+        /*buttonHostGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ScreenManager.getInstance().setCurrentScreen(ScreenType.HOST);
             }
-        });
+        });*/
 
         fadeWindow.add(buttonServers, stage);
-        fadeWindow.add(buttonHostGame, stage);
+        //fadeWindow.add(buttonHostGame, stage);
 
         fadeWindow.updateElements();
 

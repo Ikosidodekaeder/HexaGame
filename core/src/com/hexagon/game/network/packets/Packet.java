@@ -158,6 +158,7 @@ public abstract class Packet {
                  city.setLevel(level);
                  city.getCityBuildingsList().clear();
                  for (String strBuilding : buildings) {
+                     if (strBuilding.isEmpty()) continue;
                      CityBuildings building = CityBuildings.valueOf(strBuilding);
                      city.getCityBuildingsList().add(building);
                  }

@@ -67,14 +67,7 @@ public class WindowManager implements InputProcessor {
     }
 
     public void sortAll() {
-        for (int i=0; i<windowList.size(); i++) {
-            System.out.println(i + " -> " + windowList.get(i).getPriority());
-        }
         Collections.sort(windowList);
-
-        for (int i=0; i<windowList.size(); i++) {
-            System.out.println(i + " -> " + windowList.get(i).getPriority());
-        }
     }
 
     @Override
