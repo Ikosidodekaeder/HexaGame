@@ -270,10 +270,11 @@ public class ScreenGenerator extends HexagonScreen {
 
                 stage.getActors().clear();
                 stage.addActor(
-                        new UILabel(50, 100, 300, 300, 32, "Waiting for players...").getLabel()
+                        new UILabel(50, 100, 300, 300, 32, "Waiting for players... ").getLabel()
                 );
 
-                if (GameManager.instance.server.isOfflineGame()) {
+                if (GameManager.instance.server.isOfflineGame()
+                        || GameManager.instance.server.getSessionData().PlayerList.size() <= 1) {
                     MapManager.getInstance().setCurrentHexMap(hexMap);
                     ScreenManager.getInstance().setCurrentScreen(ScreenType.GAME);
                 } else {

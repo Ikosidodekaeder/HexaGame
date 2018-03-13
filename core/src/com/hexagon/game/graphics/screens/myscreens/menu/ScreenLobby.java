@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
@@ -15,6 +16,8 @@ import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.DropdownScrollableWindow;
 import com.hexagon.game.graphics.ui.windows.FadeWindow;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
+import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.packets.PacketLeave;
 import com.hexagon.game.util.MenuUtil;
 
 /**
@@ -24,7 +27,7 @@ import com.hexagon.game.util.MenuUtil;
 /**
  * Allows you to create a server that other players can join to
  */
-public class ScreenLobby extends ScreenMenuSuper {
+public class ScreenLobby extends HexagonScreen {
 
     public static String roomName = "Room";
 
@@ -47,6 +50,11 @@ public class ScreenLobby extends ScreenMenuSuper {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                if (GameManager.instance.server != null) {
+                    GameManager.instance.server.send(
+                            new PacketLeave(HexaServer.senderId, false)
+                    );
+                }
             }
         });
 
@@ -117,7 +125,6 @@ public class ScreenLobby extends ScreenMenuSuper {
 
     @Override
     public void create() {
-        super.create();
         batch = new SpriteBatch();
         font = new BitmapFont();
 
@@ -150,8 +157,8 @@ public class ScreenLobby extends ScreenMenuSuper {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
         this.update(delta);
+        ScreenManager.getInstance().screenMenuSuper.render(delta);
 
         batch.begin();
         font.draw(batch, "Room Lobby - Waiting for host to start the game", 20, 20);
@@ -171,7 +178,6 @@ public class ScreenLobby extends ScreenMenuSuper {
 
     @Override
     public void dispose() {
-        super.dispose();
         shapeRenderer.dispose();
         font.dispose();
         stage.dispose();

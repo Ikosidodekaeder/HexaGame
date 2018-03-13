@@ -8,6 +8,7 @@ import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
+import com.hexagon.game.graphics.screens.myscreens.menu.ScreenMenuSuper;
 import com.hexagon.game.input.InputManager;
 
 /**
@@ -46,6 +47,8 @@ public class ScreenLoading extends HexagonScreen {
 
         // Load Models
         new ModelManager().loadAllModels();
+
+        ScreenManager.getInstance().screenMenuSuper = new ScreenMenuSuper();
 
         // Start loading thread
         final Thread loadThread = new Thread(new Runnable() {

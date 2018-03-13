@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
@@ -29,7 +30,7 @@ import java.util.UUID;
 /**
  * Displays a list of servers
  */
-public class ScreenJoin extends ScreenMenuSuper {
+public class ScreenJoin extends HexagonScreen {
 
     public DropdownScrollableWindow subwindowServers;
 
@@ -59,6 +60,9 @@ public class ScreenJoin extends ScreenMenuSuper {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ScreenManager.getInstance().setCurrentScreen(ScreenType.MAIN_MENU);
+                if (GameManager.instance.server != null) {
+                    GameManager.instance.server.disconnect();
+                }
             }
         });
 
@@ -129,7 +133,6 @@ public class ScreenJoin extends ScreenMenuSuper {
 
     @Override
     public void create() {
-        super.create();
         batch = new SpriteBatch();
         font = new BitmapFont();
     }
@@ -158,8 +161,8 @@ public class ScreenJoin extends ScreenMenuSuper {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
         this.update(delta);
+        ScreenManager.getInstance().screenMenuSuper.render(delta);
 
         batch.begin();
         font.draw(batch, "Join a game", 20, 20);
@@ -195,7 +198,6 @@ public class ScreenJoin extends ScreenMenuSuper {
 
     @Override
     public void dispose() {
-        super.dispose();
         shapeRenderer.dispose();
         font.dispose();
         stage.dispose();

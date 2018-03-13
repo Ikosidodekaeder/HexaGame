@@ -18,9 +18,17 @@ public class CameraHelper {
     private Vector3         destination;
     private float           t; // location on vector between start and destination in percent (0.0f - 1.0f)
     private float           velocity;
+    private float           speed = 1.5f;
+    private float           maxSpeed = 0.015f;
 
     public CameraHelper(PerspectiveCamera camera) {
         this.camera = camera;
+    }
+
+    public CameraHelper(PerspectiveCamera camera, float speed, float maxSpeed) {
+        this(camera);
+        this.speed = speed;
+        this.maxSpeed = maxSpeed;
     }
 
     public void moveTo(Vector3 destination, boolean unlock) {
@@ -70,18 +78,18 @@ public class CameraHelper {
                 velocity = 0.1f * function(t);
             }*/
 
-            velocity = function(t) * 1.5f;
+            velocity = function(t) * speed;
             /*if (t <= 0.7f && velocity < 0.01f) {
                 velocity = velocity * 1.3f + 0.005f;
             }*/
             if (unlock) {
                 velocity *= 1.5f;
-                if (velocity > 0.03f) {
-                    velocity = 0.03f;
+                if (velocity > maxSpeed*2) {
+                    velocity = maxSpeed*2;
                 }
             } else {
-                if (velocity > 0.015f) {
-                    velocity = 0.015f;
+                if (velocity > maxSpeed) {
+                    velocity = maxSpeed;
                 }
             }
         }

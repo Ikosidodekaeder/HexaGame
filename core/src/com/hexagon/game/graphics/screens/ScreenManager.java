@@ -12,6 +12,7 @@ import com.hexagon.game.graphics.screens.myscreens.menu.ScreenLobby;
 import com.hexagon.game.graphics.screens.myscreens.menu.ScreenMainMenu;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
+import com.hexagon.game.graphics.screens.myscreens.menu.ScreenMenuSuper;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
 
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ public class ScreenManager {
      */
     private HexagonScreen currentScreen;
 
+    public ScreenMenuSuper screenMenuSuper;
+
 
     /**
      * Constructor
@@ -61,6 +64,7 @@ public class ScreenManager {
 
 
         this.currentScreen = screenList.get(0); // loading screen
+
     }
 
     /**
@@ -126,6 +130,19 @@ public class ScreenManager {
      */
     public void clearScreen(float red, float green, float blue) {
         Gdx.gl.glClearColor(red, green, blue, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    /**
+     * Clears the screen in the specified colour
+     *
+     * @param red
+     * @param green
+     * @param blue
+     * @param alpha
+     */
+    public void clearScreen(float red, float green, float blue, float alpha) {
+        Gdx.gl.glClearColor(red, green, blue, alpha);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 

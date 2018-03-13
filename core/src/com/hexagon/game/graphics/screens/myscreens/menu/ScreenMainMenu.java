@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
@@ -32,7 +33,7 @@ import com.hexagon.game.util.MenuUtil;
  * Concrete implementation of an Screen.
  * according to the constructor of type >MAIN_MENU<
  */
-public class ScreenMainMenu extends ScreenMenuSuper {
+public class ScreenMainMenu extends HexagonScreen {
 
     private SpriteBatch batch;
     private BitmapFont font;
@@ -43,7 +44,6 @@ public class ScreenMainMenu extends ScreenMenuSuper {
 
     @Override
     public void create() {
-        super.create();
         batch = new SpriteBatch();
         font = new BitmapFont();
 
@@ -194,7 +194,7 @@ public class ScreenMainMenu extends ScreenMenuSuper {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
+        ScreenManager.getInstance().screenMenuSuper.render(delta);
 
         batch.begin();
         font.draw(batch, "Main menu", 20, 20);
@@ -225,7 +225,6 @@ public class ScreenMainMenu extends ScreenMenuSuper {
 
     @Override
     public void dispose() {
-        super.dispose();
         shapeRenderer.dispose();
         font.dispose();
         stage.dispose();
