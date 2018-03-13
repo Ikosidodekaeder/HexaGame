@@ -76,11 +76,11 @@ public class SidebarCityStats extends Sidebar {
 
     private void happiness(final Stage stage, final StructureCity city) {
         final UILabel label = new UILabel(5, 0, 0, 0, 32, "Happiness: "
-                + (city.getHappiness()*100) + "%");
+                + ((int) (city.getHappiness()*100)) + "%");
         label.setUpdateEvent(new UpdateEvent() {
             @Override
             public void onUpdate() {
-                label.getLabel().setText("Happiness: " + (city.getHappiness()*100) + "%");
+                label.getLabel().setText("Happiness: " + ((int) (city.getHappiness()*100)) + "%");
                 if (city.getHappiness() >= 0.9) {
                     label.getLabel().getStyle().fontColor = Color.GREEN;
                 } else if (city.getHappiness() >= 0.7) {

@@ -12,8 +12,9 @@ public enum StructureType {
     RESOURCE(null),
     ORE(new String[]{"mountain_without_mine.g3db"}),
     MINE(new String[]{"mine.g3db"}),
-    FORESTRY(new String[]{"mine.g3db"}),
+    FORESTRY(new String[]{"forest.g3db"}),
     QUARRY(new String[]{"mine.g3db"}),
+    FACTORY(new String[]{"factory.g3db"}),
     CROPS(null);
 
     private String[] paths;

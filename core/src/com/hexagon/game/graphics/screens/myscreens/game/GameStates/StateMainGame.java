@@ -54,7 +54,6 @@ public class StateMainGame extends State{
             if (tile.getOwner() == null
                     || !tile.getOwner().equals(HexaServer.senderId)) {
                 gameManager.messageUtil.add("You don't own this city!", 4000, Color.RED);
-                gameManager.messageUtil.add(tile.getOwner() + "", 4000, Color.RED);
                 return;
             }
 

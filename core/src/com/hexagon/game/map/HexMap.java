@@ -130,12 +130,12 @@ public class HexMap {
             tile.setOwner(owner);
         }
 
-        if (type == StructureType.FOREST) {
-            Model treeModel = ModelManager.getInstance().getStructureModels(StructureType.FOREST).get(0);
+        if (type == StructureType.FOREST || type == StructureType.FORESTRY) {
+            Model treeModel = ModelManager.getInstance().getStructureModels(type).get(0);
             HexModel model = new HexModel(new ModelInstance(treeModel));
             model.move((float) loc.getX(), 0, (float) loc.getY());
             renderTile.getStructures().add(model);
-            tile.setStructure(new Structure(StructureType.FOREST));
+            tile.setStructure(new Structure(type));
             /*boolean placedTrees = false;
             if (Math.random() < 0.6) {
                 HexModel model1 = new HexModel(new ModelInstance(treeModel));
@@ -181,6 +181,12 @@ public class HexMap {
         } else if (type == StructureType.MINE) {
             HexModel model = new HexModel(new ModelInstance(
                     ModelManager.getInstance().getStructureModels().get(StructureType.MINE).get(0)
+            ));
+            model.move((float) loc.getX(), 0.001f, (float) loc.getY());
+            renderTile.getStructures().add(model);
+        } else if (type == StructureType.FACTORY) {
+            HexModel model = new HexModel(new ModelInstance(
+                    ModelManager.getInstance().getStructureModels().get(StructureType.FACTORY).get(0)
             ));
             model.move((float) loc.getX(), 0.001f, (float) loc.getY());
             renderTile.getStructures().add(model);

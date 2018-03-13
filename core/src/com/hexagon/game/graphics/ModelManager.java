@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.hexagon.game.map.structures.StructureType;
@@ -63,7 +64,11 @@ public class ModelManager {
             List<Model> models = new ArrayList<>();
             if (structureType.getPaths() != null) {
                 for (String path : structureType.getPaths()) {
-                    models.add(loadModel(path));
+                    Model model = loadModel(path);
+                    models.add(model);
+                    for (Material material : model.materials) {
+                        material.set(new IntAttribute(IntAttribute.CullFace, 0));
+                    }
                 }
             }
             structureModels.put(structureType, models);

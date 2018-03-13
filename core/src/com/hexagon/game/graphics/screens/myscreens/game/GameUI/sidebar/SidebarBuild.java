@@ -1,6 +1,7 @@
 package com.hexagon.game.graphics.screens.myscreens.game.GameUI.sidebar;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -28,15 +29,24 @@ public class SidebarBuild extends Sidebar {
 
     @Override
     public void select(final HexMap map, final Point p, final Stage stage) {
+        Tile tile = map.getTileAt(p.getX(), p.getY());
+        if (tile.getOwner() != null
+                && !tile.getOwner().equals(HexaServer.senderId)) {
+            GameManager.instance.messageUtil.add("You don't own this tile!", 4000, Color.RED);
+            return;
+        }
+
         super.select(map, p, stage);
         statusWindow.removeAll(stage);
 
-        Tile tile = map.getTileAt(p.getX(), p.getY());
         if (tile.getStructure() != null) {
             Structure structure = (Structure) tile.getStructure();
             switch (structure.getType()) {
-                case ORE:
+                case MINE:
                     destroyMine(p,stage);
+                    break;
+                case FOREST:
+                    addForestryButton(p, stage);
                     break;
                 case FORESTRY:
                     destroyForestryButton(p,stage);
@@ -44,17 +54,18 @@ public class SidebarBuild extends Sidebar {
                 case QUARRY:
                     destroyQuarry(p,stage);
                     break;
-                case CITY:
-                    // TODO: Open City Information Window
+                case ORE:
+                    addMine(p,stage);
+                    break;
                 default:
                     break;
             }
         } else {
             switch (tile.getBiome()){
                 case PLAINS:{
-                    addForestryButton(p, stage);
-                    addQuarry(p,stage);
-                    addMine(p,stage);
+                    //addForestryButton(p, stage);
+                    //addQuarry(p,stage);
+                    addFactoryButton(p, stage);
                 }break;
                 case DESERT:{
 
@@ -85,7 +96,7 @@ public class SidebarBuild extends Sidebar {
     }
 
     private void addForestryButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Add Forestrys", 5, 0, 50, 0, 26);
+        UiButton buttonForest = new UiButton("Build Forestry", 5, 0, 50, 0, 26);
         buttonForest.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -97,6 +108,36 @@ public class SidebarBuild extends Sidebar {
             }
         });
         statusWindow.add(buttonForest, stage);
+    }
+
+    private void destroyFactoryButton(final Point p, final Stage stage) {
+        UiButton buttonFactory = new UiButton("Destroy Factory", 5, 0, 50, 0, 26);
+        buttonFactory.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketDestroy(p)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+            }
+        });
+        statusWindow.add(buttonFactory, stage);
+
+    }
+
+    private void addFactoryButton(final Point p, final Stage stage) {
+        UiButton buttonFactory = new UiButton("Build Factory", 5, 0, 50, 0, 26);
+        buttonFactory.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketBuild(p, StructureType.FACTORY, HexaServer.senderId)
+                );
+
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+            }
+        });
+        statusWindow.add(buttonFactory, stage);
     }
 
     private void destroyMine(final Point p, final Stage stage) {

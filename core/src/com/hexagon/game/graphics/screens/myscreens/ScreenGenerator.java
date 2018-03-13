@@ -102,10 +102,10 @@ public class ScreenGenerator extends HexagonScreen {
                         && random.nextInt(100) < 20) {
                     tile.setBiome(biomeLast);
                 } else {
-                    int r = random.nextInt(2);
+                    int r = random.nextInt(3);
                     if (r == 0) {
                         tile.setBiome(Biome.DESERT);
-                    } else if (r == 1) {
+                    } else if (r > 0) {
                         tile.setBiome(Biome.PLAINS);
                     }
                 }
@@ -147,7 +147,7 @@ public class ScreenGenerator extends HexagonScreen {
                 if (tile.getStructure() != null) {
                     return tile;
                 }
-                if (random.nextInt(100) <= 20) {
+                if (random.nextInt(100) <= 10) {
                     int r = random.nextInt(ResourceType.values().length - 1);
                     ResourceType resourceType = ResourceType.values()[r];
                     tile.setStructure(new StructureResource(resourceType));
@@ -199,7 +199,7 @@ public class ScreenGenerator extends HexagonScreen {
                 if (tile.getStructure() != null) {
                     return tile;
                 }
-                if (random.nextInt(100) <= 80) {
+                if (random.nextInt(100) <= 40) {
                     tile.setStructure(new Structure(StructureType.FOREST));
                 }
                 return tile;

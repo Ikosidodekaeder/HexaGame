@@ -426,13 +426,11 @@ public class ScreenGame extends HexagonScreen {
             updateCityTime += delta;
 
             if (updateCityTime >= 5.0f) {
-                System.out.println("Updating all cities " + currentMap.getCities().size());
                 updateCityTime = 0;
                 // Update cities
                 for (int i = 0; i < currentMap.getCities().size(); i++) {
                     StructureCity city = currentMap.getCities().get(i);
                     if (city.update()) {
-                        System.out.println("PacketCityUpdate " + city.getName() + " -> " + city.getLevel());
                         gameManager.server.send(
                                 new PacketCityUpdate(city.getArrayPosition(), city)
                         );
@@ -495,7 +493,8 @@ public class ScreenGame extends HexagonScreen {
         ScreenManager.getInstance().clearScreen(0.2f, 0.25f, 0.35f);
         Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         //Gdx.gl.glDisable(GL20.GL_BLEND); // disallow transparent drawing
-        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+        Gdx.gl.glCullFace(GL20.GL_FRONT);
 
 
         renderShadow();

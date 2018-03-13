@@ -15,6 +15,8 @@ import java.util.List;
 
 public class StructureCity extends Structure {
 
+    private static final float DEFAULT_HAPPINESS = 0.45f;
+
     public static String[] names = new String[] {
             "Nürnberg",
             "Erlangen",
@@ -45,7 +47,7 @@ public class StructureCity extends Structure {
     private String name;
     private int level = 0;
     private float population = 500;
-    private float happiness = 0.5f;
+    private float happiness = DEFAULT_HAPPINESS;
     private List<CityBuildings> cityBuildingsList = new ArrayList<>();
 
 
@@ -100,7 +102,7 @@ public class StructureCity extends Structure {
 
     public int getMaxPopulation() {
         // ((level + 1)^3)*1000
-        return (int) (Math.pow(level + 1, 3)*900);
+        return (int) (Math.pow(level + 1, 3)*1000);
     }
 
     public List<CityBuildings> getCityBuildingsList() {
@@ -112,7 +114,7 @@ public class StructureCity extends Structure {
     }
 
     public void calculateHappiness() {
-        float newHappiness = 0.5f;
+        float newHappiness = DEFAULT_HAPPINESS;
         for (int i=0; i<cityBuildingsList.size(); i++) {
             newHappiness += cityBuildingsList.get(i).getHappinessAdd();
         }

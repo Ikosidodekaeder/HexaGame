@@ -3,11 +3,11 @@ package com.hexagon.game.graphics.screens.myscreens.game.GameUI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
-import com.hexagon.game.graphics.screens.myscreens.game.ScreenGame;
 import com.hexagon.game.graphics.ui.UILabel;
 import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.graphics.ui.windows.Window;
+import com.hexagon.game.network.HexaServer;
 
 /**
  * Created by Johannes on 25.02.2018.
@@ -27,7 +27,7 @@ public class StatusBar {
     public float StatusHeight = 50;
 
 
-    public UILabel StatusInfos     = new UILabel(10,level,200,StatusHeight,32,"Test");
+    public UILabel labelClaims = new UILabel(10,level,200,StatusHeight,32,"? Claims");
 
     public final UILabel PlayerID = new UILabel(775,level,200,StatusHeight,16,GameManager.instance.server.getLocalClientID().toString());
     public IngameMenu  MainMenu;
@@ -42,11 +42,13 @@ public class StatusBar {
                 stage
         );
 
-        StatusInfos.setUpdateEvent(new UpdateEvent(){
+        labelClaims.setUpdateEvent(new UpdateEvent(){
 
             @Override
             public void onUpdate() {
-                StatusInfos.getLabel().setText("" + Gdx.graphics.getFramesPerSecond() + " FPS, " + ScreenGame.renderedTiles + " Tiles");
+                labelClaims.getLabel().setText(
+                        GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().claims + " Claims"
+                );
             }
         });
 
@@ -59,7 +61,7 @@ public class StatusBar {
             }
         });
 
-        Top.add(StatusInfos,stage);
+        Top.add(labelClaims,stage);
         Top.add(PlayerID,stage);
         Top.add(MainMenu.Menu,stage);
         Top.updateElements();

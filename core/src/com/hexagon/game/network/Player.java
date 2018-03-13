@@ -8,8 +8,9 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Player {
 
-    public Color color;
-    public String username;
+    public Color    color;
+    public String   username;
+    public int      claims = 0;
 
     public Player(Color color, String username) {
         this.color = color;
