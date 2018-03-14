@@ -12,6 +12,7 @@ import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.network.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,6 +150,11 @@ public class HexMap {
             colorModel.move((float) loc.getX(), 0.05f, (float) loc.getY());
             renderTile.setOwnerColor(colorModel);
             tile.setOwner(owner);
+
+            if (GameManager.instance.server.isHost()) {
+                Player player = GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond();
+                player.claims--;
+            }
         }
 
         if (type == StructureType.FOREST || type == StructureType.FORESTRY) {
@@ -229,6 +235,10 @@ public class HexMap {
 
         if (tile.getOwner() != null && builtTiles.contains(tile)) {
             builtTiles.remove(tile);
+            if (GameManager.instance.server.isHost()) {
+                Player player = GameManager.instance.server.getSessionData().PlayerList.get(tile.getOwner()).getSecond();
+                player.claims++;
+            }
         }
     }
 

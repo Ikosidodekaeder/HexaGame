@@ -99,16 +99,23 @@ public class SidebarCityStats extends Sidebar {
         statusWindow.add(label, stage);
     }
 
+    private void getUpgradePrice(final Stage stage, final StructureCity city) {
+        UILabel label = new UILabel(5, 0, 0, 0, 24, "Price: " + city.getUpgradePrice() + "$");
+        label.getLabel().getStyle().fontColor = Color.GRAY;
+        statusWindow.add(label, stage);
+    }
+
     private void upgradeButton(final Stage stage, final StructureCity city) {
         if (city.getPopulation() >= city.getMaxPopulation()*0.99) {
             UiButton uiButton = new UiButton("[Upgrade City]", 5, 0, 0, 0, 42);
             uiButton.getTextButton().getStyle().fontColor = Color.LIME;
             statusWindow.add(uiButton, stage);
 
+            getUpgradePrice(stage, city);
+
             uiButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    System.out.println("###### PRESSED UPGRADE");
                     GameManager.instance.server.send(
                             new PacketCityBuild(city.getArrayPosition(), true)
                     );
@@ -118,12 +125,16 @@ public class SidebarCityStats extends Sidebar {
             UiButton uiButton = new UiButton("[Upgrade City]", 5, 0, 0, 0, 32);
             uiButton.getTextButton().getStyle().fontColor = Color.DARK_GRAY;
 
+
             UILabel label = new UILabel(5, 0, 0, 0, 24, "Population needed for upgrade:");
             label.getLabel().getStyle().fontColor = Color.GRAY;
             UILabel label2 = new UILabel(5, 0, 0, 0, 32, String.valueOf(city.getMaxPopulation()));
             label2.getLabel().getStyle().fontColor = Color.GRAY;
 
             statusWindow.add(uiButton, stage);
+
+            getUpgradePrice(stage, city);
+
             statusWindow.add(label, stage);
             statusWindow.add(label2, stage);
         }

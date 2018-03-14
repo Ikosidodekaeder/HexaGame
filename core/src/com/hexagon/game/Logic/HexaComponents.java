@@ -14,5 +14,6 @@ public enum HexaComponents implements ComponentType {
     ORE,
     STONE,
     TRADE,
+    FOOD,
     TRADEMONEY
 }

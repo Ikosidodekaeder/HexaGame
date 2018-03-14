@@ -50,10 +50,29 @@ public class GameManager {
 
     //It's the easiest way: quick and dirty yeah...please let no one ever read this piece of code...
     public final UUID       GlobalMarketID = UUID.fromString("26420bf8-982f-4a46-aef1-c79c655b82d6");
+
     private Map<String,Integer> GlobalMarketResources = new Hashtable<String,Integer>() {{
-        put("STONE",    0);
-        put("WOOD",     0);
-        put("ORE",      0);
+        put("STONE",    100);
+        put("WOOD",     200);
+        put("ORE",      50);
+        put("FOOD",      200);
+        put("METAL",      10);
+    }};
+
+    private Map<String,Integer> DefaultAmount = new Hashtable<String,Integer>() {{
+        put("STONE",    100);
+        put("WOOD",     200);
+        put("ORE",      50);
+        put("FOOD",      100);
+        put("METAL",      10);
+    }};
+
+    private Map<String,Integer> DefaultPrice = new Hashtable<String,Integer>() {{
+        put("STONE",    80);
+        put("WOOD",     40);
+        put("ORE",      110);
+        put("FOOD",      20);
+        put("METAL",      200);
     }};
 
     public List<State>      states = new ArrayList<>();
@@ -295,6 +314,39 @@ public class GameManager {
     public void setPlayerResources(Map<String, Integer> playerResources) {
         //PlayerResources = playerResources;
         server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().resources = playerResources;
+    }
+
+    public void addGlobalResource(String str, int amount) {
+        if (GlobalMarketResources.containsKey(str)) {
+            GlobalMarketResources.put(str, GlobalMarketResources.get(str) + amount);
+        } else {
+            GlobalMarketResources.put(str, amount);
+        }
+    }
+
+    public boolean hasGlobalResource(String str, int amount) {
+        return GlobalMarketResources.containsKey(str) && GlobalMarketResources.get(str) >= amount;
+    }
+
+    public void removeGlobalResource(String str, int amount) {
+        if (GlobalMarketResources.containsKey(str)) {
+            GlobalMarketResources.put(str, GlobalMarketResources.get(str) - amount);
+        }
+    }
+
+    public long getPrice(String str) {
+        int amount = GlobalMarketResources.get(str);
+        if (amount <= 0) {
+            return -1;
+        }
+
+        int defaultAmount = DefaultAmount.get(str);
+        int defaultPrice = DefaultPrice.get(str);
+
+        // example: 100/200 = 0.5 ---> 50$ * 0.5 = 25$
+        // example: 100/50 = 2 ---> 50$ * 2 = 100$
+        double price = (defaultPrice * ((double) defaultAmount / (double) amount));
+        return (long) price;
     }
 
 

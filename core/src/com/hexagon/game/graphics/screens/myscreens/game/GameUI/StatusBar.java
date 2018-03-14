@@ -61,9 +61,21 @@ public class StatusBar {
 
             @Override
             public void onUpdate() {
+                long money = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().money;
                 labelMoney.getLabel().setText(
-                        "Money: " + GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().claims
+                        "Money: " + money + "$"
                 );
+                if (money > 2000) {
+                    labelMoney.getLabel().getStyle().fontColor = Color.LIME;
+                } else if (money > 100) {
+                    labelMoney.getLabel().getStyle().fontColor = Color.GREEN;
+                } else if (money >= 0) {
+                    labelMoney.getLabel().getStyle().fontColor = Color.WHITE;
+                } else if (money < 0) {
+                    labelMoney.getLabel().getStyle().fontColor = Color.ORANGE;
+                } else if (money < 1000) {
+                    labelMoney.getLabel().getStyle().fontColor = Color.RED;
+                }
             }
         });
 

@@ -17,7 +17,7 @@ public class Sidebar {
 
 
     public Sidebar(GroupWindow window, Stage stage, int y, int y2, int height) {
-        statusWindow = new AnimationWindow(-355, y, 5, y2, 350, height, stage);
+        statusWindow = new AnimationWindow(-455, y, 5, y2, 450, height, stage);
         window.getWindowList().add(statusWindow);
 
         this.stage = stage;

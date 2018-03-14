@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.hexagon.game.Logic.Components.HexaComponentTrade;
 import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.UILabel;
@@ -14,14 +13,7 @@ import com.hexagon.game.graphics.ui.UpdateEvent;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.graphics.ui.windows.GroupWindow;
 import com.hexagon.game.network.HexaServer;
-import com.hexagon.game.network.Player;
-import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketTradeMoney;
-
-import java.util.Iterator;
-
-import de.svdragster.logica.manager.Entity.Entity;
-import de.svdragster.logica.util.Pair;
 
 /**
  * Created by Sven on 01.03.2018.
@@ -32,6 +24,7 @@ public class SidebarResources extends Sidebar {
     public final UILabel OreResource = new UILabel(0,0,200,0,28,"0 Ore");
     public final UILabel WoodResource = new UILabel(0,0,200,0,28,"0 Wood");
     public final UILabel StoneResource = new UILabel(0,0,200,0,28,"0 Stone");
+    public final UILabel FoodResource = new UILabel(0,0,200,0,28,"0 Food");
 
     public SidebarResources(GroupWindow window, Stage stage) {
         super(window, stage, 5, 5, Gdx.graphics.getHeight()/2-5);
@@ -57,9 +50,25 @@ public class SidebarResources extends Sidebar {
             }
         });
 
+        FoodResource.setUpdateEvent(new UpdateEvent() {
+            @Override
+            public void onUpdate() {
+                int amount = GameManager.instance.getPlayerResources().get(HexaComponents.FOOD.name());
+                FoodResource.getLabel().setText(amount + " Food");
+                if (amount <= 20) {
+                    FoodResource.getLabel().getStyle().fontColor = Color.RED;
+                } else if (amount < 75) {
+                    FoodResource.getLabel().getStyle().fontColor = Color.ORANGE;
+                } else {
+                    FoodResource.getLabel().getStyle().fontColor = Color.WHITE;
+                }
+            }
+        });
+
         UiResourceTrade oreTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.ORE);
         UiResourceTrade woodTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.WOOD);
         UiResourceTrade stoneTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.STONE);
+        UiResourceTrade foodTrade = new UiResourceTrade(OreResource.getHeight(),HexaComponents.FOOD);
 
         oreTrade.getSell().addListener(new ChangeListener() {
             @Override
@@ -69,7 +78,7 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.ORE,
-                                -50
+                                -1
                         )
                 );
             }
@@ -78,13 +87,12 @@ public class SidebarResources extends Sidebar {
         oreTrade.getBuy().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameManager.instance.messageUtil.add("button");
                 GameManager.instance.server.send(
                         new PacketTradeMoney(
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.ORE,
-                                25
+                                1
                         )
                 );
             }
@@ -98,7 +106,7 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.WOOD,
-                                -50
+                                -1
                         )
                 );
             }
@@ -112,7 +120,7 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.WOOD,
-                                50
+                                1
                         )
                 );
             }
@@ -126,7 +134,7 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.STONE,
-                                -50
+                                -1
                         )
                 );
             }
@@ -140,7 +148,35 @@ public class SidebarResources extends Sidebar {
                                 null,
                                 HexaServer.senderId,
                                 HexaComponents.STONE,
-                                50
+                                1
+                        )
+                );
+            }
+        });
+
+        foodTrade.getSell().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.FOOD,
+                                -10
+                        )
+                );
+            }
+        });
+
+        foodTrade.getBuy().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketTradeMoney(
+                                null,
+                                HexaServer.senderId,
+                                HexaComponents.FOOD,
+                                10
                         )
                 );
             }
@@ -152,6 +188,8 @@ public class SidebarResources extends Sidebar {
         statusWindow.add(woodTrade, stage);
         statusWindow.add(StoneResource, stage);
         statusWindow.add(stoneTrade, stage);
+        statusWindow.add(FoodResource, stage);
+        statusWindow.add(foodTrade, stage);
 
         for (UiElement element : statusWindow.getElementList()) {
             element.setHeight(element.getHeight() + 10);
@@ -182,12 +220,22 @@ public class SidebarResources extends Sidebar {
 
         public UiResourceTrade(float height,final HexaComponents type) {
             super(0, 0, 100, 0);
-            buy = new UiButton("Buy", 0, 0, 0, 0, 28);
+
+            // SHITTY
+            String strBuy = "Buy";
+            String strSell = "Sell";
+            if (type == HexaComponents.FOOD) {
+                strBuy += " 10";
+                strSell += " 10";
+            }
+            // SHITTY END
+
+            buy = new UiButton(strBuy, 0, 0, 0, 0, 28);
             buy.getTextButton().getStyle().fontColor = new Color(0.3f, 0.8f, 0.3f, 1);
 
             label = new UILabel(0, 0, 0, 0, 28, " - ");
 
-            sell = new UiButton("Sell", 0, 0, 0, 0, 28);
+            sell = new UiButton(strSell, 0, 0, 0, 0, 28);
             sell.getTextButton().getStyle().fontColor = new Color(0.85f, 0.3f, 0.3f, 1);
 
             price = new UILabel(0, 0, 0, 0, 28, " 50$ ");
@@ -197,7 +245,13 @@ public class SidebarResources extends Sidebar {
             available.setUpdateEvent(new UpdateEvent() {
                 @Override
                 public void onUpdate() {
-                    available.getLabel().setText(" | Available: "+GameManager.instance.getGlobalMarketResources().get(type.toString()).toString());
+                    long marketPrice = GameManager.instance.getPrice(type.name());
+                    if (marketPrice == -1) {
+                        price.getLabel().setText(" X ");
+                    } else {
+                        price.getLabel().setText(" " + marketPrice +"$ ");
+                    }
+                    available.getLabel().setText(" | Available: " + GameManager.instance.getGlobalMarketResources().get(type.toString()).toString());
                 }
             });
 

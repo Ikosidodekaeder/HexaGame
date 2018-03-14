@@ -533,6 +533,7 @@ public class ScreenGame extends HexagonScreen {
                         default:
                             break;
                     }
+                    player.money -= 1;
                 }
 
                 // Update cities
@@ -551,7 +552,8 @@ public class ScreenGame extends HexagonScreen {
 
                 for (UUID uuid : gameManager.server.getSessionData().PlayerList.keySet()) {
                     Player player = gameManager.server.getSessionData().PlayerList.get(uuid).getSecond();
-                    player.removeResource("FOOD", (player.population/500));
+                    player.removeResource("FOOD", (player.population/500) + 1);
+                    player.money += player.population*0.01;
                 }
 
                 // Calculate the total amount of population first and then calculate the happiness

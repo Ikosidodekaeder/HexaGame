@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class StructureCity extends Structure {
 
-    private static final float DEFAULT_HAPPINESS = 0.49f;
+    private static final float DEFAULT_HAPPINESS = 0.492f;
 
     public static String[] names = new String[] {
             "Nürnberg",
@@ -112,7 +112,7 @@ public class StructureCity extends Structure {
 
     public int getMaxPopulation() {
         // ((level + 1)^2)*1000
-        return (int) (Math.pow(level + 1, 2)*250);
+        return (int) (Math.pow(level + 1, 2.2)*300);
     }
 
     public void addBuilding(CityBuildings building) {
@@ -132,19 +132,29 @@ public class StructureCity extends Structure {
 
     public void calculateHappiness() {
         if (owner == null) return;
-        float newHappiness = DEFAULT_HAPPINESS;
-        for (int i=0; i<cityBuildingsList.size(); i++) {
-            newHappiness += cityBuildingsList.get(i).getHappinessAdd();
-        }
-        Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
-        int unemployed = player.population - player.jobs;
+        float newHappiness;
+        if (!GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond()
+                .hasResource("FOOD", 1)) {
+            newHappiness = 0.49f;
+        } else {
+            newHappiness = DEFAULT_HAPPINESS;
+            for (int i = 0; i < cityBuildingsList.size(); i++) {
+                newHappiness += cityBuildingsList.get(i).getHappinessAdd();
+            }
+            Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
+            int unemployed = player.population - player.jobs;
 
-        System.out.println(unemployed);
-        if (unemployed > 0) {
-            newHappiness -= unemployed * 0.0005;
+            System.out.println(unemployed);
+            if (unemployed > 0) {
+                newHappiness -= unemployed * 0.0005;
+            }
         }
 
         setHappiness(newHappiness);
+    }
+
+    public int getUpgradePrice() {
+        return (int) (Math.pow(level+1, 2) * 200);
     }
 
     public boolean update() {

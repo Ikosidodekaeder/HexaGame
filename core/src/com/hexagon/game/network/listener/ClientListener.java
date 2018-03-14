@@ -6,15 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.hexagon.game.Logic.Components.HexaComponentOre;
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentStone;
-import com.hexagon.game.Logic.Components.HexaComponentTrade;
 import com.hexagon.game.Logic.Components.HexaComponentWood;
-import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
-import com.hexagon.game.graphics.screens.myscreens.menu.ScreenJoin;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateCityView;
 import com.hexagon.game.graphics.screens.myscreens.game.GameStates.StateType;
+import com.hexagon.game.graphics.screens.myscreens.menu.ScreenJoin;
 import com.hexagon.game.graphics.ui.buttons.UiButton;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.JsonHexMap;
@@ -45,13 +43,11 @@ import com.hexagon.game.network.packets.PacketType;
 import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
-import java.util.List;
 import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.components.ComponentProducer;
 import de.svdragster.logica.components.ComponentResource;
-import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.Delegate;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.world.Engine;
@@ -154,15 +150,19 @@ public class ClientListener extends PacketListener {
 
                     if (tile.getStructure() instanceof StructureCity) {
                         StructureCity city = (StructureCity) tile.getStructure();
-                        ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"host? " + server.isHost());
+                        Player player = server.getSessionData().PlayerList.get(city.getOwner()).getSecond();
+
                         if (server.isHost()) {
-                            ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"building " + (packet.getBuilding() == null) + ", " + packet.isUpgrade());
                             if (packet.getBuilding() == null) {
+                                int upgradePrice = city.getUpgradePrice();
+                                if (player.money < upgradePrice) {
+                                    return;
+                                }
                                 // Upgrade City
-                                ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"level " + city.getLevel());
                                 if (city.getLevel() >= 4) {
                                     return;
                                 }
+                                player.money -= upgradePrice;
                                 city.setLevel(city.getLevel()+1);
                                 city.upgrade(tile, server);
                                 return;
@@ -172,14 +172,21 @@ public class ClientListener extends PacketListener {
                         CityBuildings building = packet.getBuilding();
 
                         if (!city.getCityBuildingsList().contains(building)) {
-                            city.addBuilding(building);
+                            if (player.money >= building.getCost()) {
+                                player.money -= building.getCost();
 
-                            GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
-                            GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
+                                city.addBuilding(building);
 
-                            if (GameManager.instance.getCurrentState().getStateType() == StateType.CITY_VIEW) {
-                                StateCityView stateCityView = (StateCityView) GameManager.instance.getCurrentState();
-                                stateCityView.select(map, packet.getArrayPosition(), GameManager.instance.getStage());
+                                GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
+                                GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
+
+                                if (GameManager.instance.getCurrentState().getStateType() == StateType.CITY_VIEW) {
+                                    StateCityView stateCityView = (StateCityView) GameManager.instance.getCurrentState();
+                                    stateCityView.select(map, packet.getArrayPosition(), GameManager.instance.getStage());
+                                }
+                            } else {
+                                GameManager.instance.messageUtil.actionBar("You don't have enough money!", 5000, Color.RED);
+                                GameManager.instance.messageUtil.add("You don't have enough money!", 5000, Color.RED);
                             }
                         }
                     }
@@ -491,7 +498,35 @@ public class ClientListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADEMONEY"+ HexaServer.WhatAmI(server));
 
                     if(server.isHost()){
-                        List<Component> PossiblePlayer = Engine.getInstance().getComponentManager().groupByType(HexaComponents.OWNER);
+                        Player player = server.getSessionData().PlayerList.get(packet.source).getSecond();
+                        String resource = packet.type.name();
+                        long price = GameManager.instance.getPrice(resource);
+                        if (price == -1) {
+                            return;
+                        }
+                        price = Math.abs((price * packet.originAmount));
+                        int amount = Math.abs((int) packet.originAmount);
+
+                        if (packet.originAmount > 0) {
+                            // Player purchases from market
+                            if (GameManager.instance.hasGlobalResource(resource, amount)
+                                    && player.money >= price) {
+
+                                player.addResource(resource, amount);
+                                GameManager.instance.removeGlobalResource(resource, amount);
+
+                                player.money -= price;
+                            }
+                        } else {
+                            // Player sells to market
+                            if (player.hasResource(resource, amount)) {
+                                player.removeResource(resource, amount);
+                                GameManager.instance.addGlobalResource(resource, amount);
+
+                                player.money += price;
+                            }
+                        }
+                        /*List<Component> PossiblePlayer = Engine.getInstance().getComponentManager().groupByType(HexaComponents.OWNER);
                         Entity Market = server.getSessionData().PlayerList.get(GameManager.instance.GlobalMarketID).getFirst();
                         Entity source = server.getSessionData().PlayerList.get(packet.source).getFirst();
 
@@ -506,7 +541,7 @@ public class ClientListener extends PacketListener {
                                                 )
                                         )
                                 )
-                        );
+                        );*/
                     }
 
                 }
