@@ -9,7 +9,6 @@ import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
-import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketTradeMoney;
@@ -22,7 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -306,7 +305,7 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected() && isHost()) {
-            if(System.currentTimeMillis() - lastPlayerupdate >= 2000){
+            if(System.currentTimeMillis() - lastPlayerupdate >= 2_000){
                 lastPlayerupdate = System.currentTimeMillis();
                 if (getSessionData() != null && isHost()) {
                     for (UUID id : getSessionData().PlayerList.keySet()) {
@@ -364,16 +363,17 @@ public class HexaServer {
     }
 
     public void broadcastPlayerStatus(UUID playerID) {
-      try{
-          send(new PacketPlayerStatus(senderId,playerID,this.getSessionData().getPlayerResourceStatus(playerID)));
-      }catch (RuntimeException e){
-          //System.out.println(e.getMessage());
-          send(new PacketPlayerStatus(senderId,playerID,new Hashtable<String, Integer>(){{
-              put("ORE",-1);
-              put("WOOD",-1);
-              put("STONE",-1);
-          }}));
-      }
+        try {
+            send(new PacketPlayerStatus(
+                  senderId, playerID,this.getSessionData().getPlayerResourceStatus(playerID),
+                  this.getSessionData().PlayerList.get(playerID).getSecond()));
+        } catch (RuntimeException e) {
+            send(new PacketPlayerStatus(senderId,playerID,new HashMap<String, Integer>(){{
+                put("ORE",-1);
+                put("WOOD",-1);
+                put("STONE",-1);
+            }}, 0, 1, 0, 0));
+        }
     }
 
     public SessionData getSessionData() {

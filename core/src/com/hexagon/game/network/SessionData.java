@@ -1,18 +1,15 @@
 package com.hexagon.game.network;
 
 import com.hexagon.game.Logic.Components.HexaComponentOwner;
-import com.hexagon.game.Logic.HexaComponents;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.map.HexMap;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.util.ConsoleColours;
 
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import de.svdragster.logica.components.Component;
 import de.svdragster.logica.manager.Entity.Entity;
 import de.svdragster.logica.util.Pair;
 import de.svdragster.logica.util.SystemNotifications.NotificationRemoveEntity;
@@ -74,8 +71,9 @@ public class SessionData implements SessionActions {
         if(PlayerList.containsKey(playerID)){
 
             ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK, "Start collecting Information for: " + playerID + "This is done here: "+ HexaServer.WhatAmI(GameManager.instance.server));
-            Map<String,Integer> result = new Hashtable<>();
-            List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(
+            Map<String,Integer> result = PlayerList.get(playerID).getSecond().resources;
+
+            /*List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(
                     HexaComponents.ORE,HexaComponents.WOOD,HexaComponents.STONE
             );
 
@@ -118,7 +116,7 @@ public class SessionData implements SessionActions {
                 ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK,">>>>>>>>>>>>>>>>> I HATE YOU: no ORE found for player: "  + playerID);
 
                 result.put("ORE",0);
-            }
+            }*/
             return result;
         }
 

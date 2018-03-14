@@ -327,7 +327,6 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received PLAYER_STATUS" + HexaServer.WhatAmI(server));
-                    System.out.println();
                     PacketPlayerStatus player = (PacketPlayerStatus)args[0];
 
                     ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received Packet for(PLAYERID): " + player.PlayerID + "|| I am(SERVERID): "+HexaServer.senderId  + HexaServer.WhatAmI(server));

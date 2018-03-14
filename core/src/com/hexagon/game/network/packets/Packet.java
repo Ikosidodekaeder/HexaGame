@@ -134,7 +134,7 @@ public abstract class Packet {
                      CityBuildings building = CityBuildings.valueOf(arr[offset + 1]);
                      return new PacketCityBuild(senderId, point, building);
                  }
-             case CITY_UPDATE:
+             case CITY_UPDATE: {
                  strPoint = arr[offset].split(",");
                  point = new Point(
                          Integer.parseInt(strPoint[0]),
@@ -145,15 +145,15 @@ public abstract class Packet {
                      return null;
                  }
                  HexMap map = GameManager.instance.getGame().getCurrentMap();
-                 if (map.getTileAt(point).getStructure() ==  null
+                 if (map.getTileAt(point).getStructure() == null
                          || !(map.getTileAt(point).getStructure() instanceof StructureCity)) {
                      return null;
                  }
                  StructureCity city = (StructureCity) GameManager.instance.getGame().getCurrentMap().getTileAt(point).getStructure();
-                 int level = Integer.parseInt(arr[offset+1]);
-                 String[] buildings = arr[offset+2].split(",");
-                 float happiness = Float.parseFloat(arr[offset+3]);
-                 float population = Float.parseFloat(arr[offset+4]);
+                 int level = Integer.parseInt(arr[offset + 1]);
+                 String[] buildings = arr[offset + 2].split(",");
+                 float happiness = Float.parseFloat(arr[offset + 3]);
+                 float population = Float.parseFloat(arr[offset + 4]);
 
                  city.setLevel(level);
                  city.getCityBuildingsList().clear();
@@ -166,6 +166,7 @@ public abstract class Packet {
                  city.setPopulation(population);
 
                  return new PacketCityUpdate(point, city);
+             }
              case DESTROY:
                  strPoint = arr[offset].split(",");
                  point = new Point(
@@ -188,8 +189,15 @@ public abstract class Packet {
                      String[] arrResource = stringResource.split("=");
                      payload.put(arrResource[0], Integer.parseInt(arrResource[1]));
                  }
+                 UUID playerId = UUID.fromString(arr[offset+1]);
 
-                 return new PacketPlayerStatus(senderId,UUID.fromString(arr[offset+1]),payload);
+                 String[] strPlayer = arr[offset+2].split(",");
+                 int  claims        = Integer.parseInt(strPlayer[0]);
+                 long money         = Integer.parseInt(strPlayer[1]);
+                 int  population    = Integer.parseInt(strPlayer[2]);
+                 int  jobs          = Integer.parseInt(strPlayer[3]);
+
+                 return new PacketPlayerStatus(senderId, playerId, payload, claims, money, population, jobs);
              }
              case TRADEMONEY:{
                  String[] values = arr[offset].split(",");

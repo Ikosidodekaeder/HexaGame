@@ -41,6 +41,7 @@ import com.hexagon.game.map.MapManager;
 import com.hexagon.game.map.Point;
 import com.hexagon.game.map.TileLocation;
 import com.hexagon.game.map.detail.Car;
+import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.tiles.Biome;
@@ -51,6 +52,7 @@ import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.models.Text3D;
 import com.hexagon.game.network.HexaServer;
+import com.hexagon.game.network.Player;
 import com.hexagon.game.network.packets.PacketCityUpdate;
 import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.HexagonUtil;
@@ -493,7 +495,7 @@ public class ScreenGame extends HexagonScreen {
                 //Engine.getInstance().run(delta);
             }
             callEventsTime += delta;
-            if (callEventsTime >= 0.1f) {
+            if (callEventsTime >= 0.2f) {
                 gameManager.server.callEvents();
                 callEventsTime = 0;
 
@@ -507,6 +509,32 @@ public class ScreenGame extends HexagonScreen {
 
             if (updateCityTime >= 2.5f) {
                 updateCityTime = 0;
+
+                for (int i=0; i<getCurrentMap().getBuiltTiles().size(); i++) {
+                    Tile tile = getCurrentMap().getBuiltTiles().get(i);
+                    if (tile.getStructure() == null
+                            || tile.getOwner() == null) {
+                        continue;
+                    }
+                    Structure structure = (Structure) tile.getStructure();
+                    Player player = gameManager.server.getSessionData().PlayerList.get(tile.getOwner()).getSecond();
+                    switch (structure.getType()) {
+                        case MINE:
+                            player.addResource("ORE", 1);
+                            break;
+                        case FACTORY:
+                            break;
+                        case QUARRY:
+                            player.addResource("STONE", 1);
+                            break;
+                        case FORESTRY:
+                            player.addResource("WOOD", 1);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 // Update cities
                 for (UUID uuid : gameManager.server.getSessionData().PlayerList.keySet()) {
                     GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond().population = 0;
@@ -520,6 +548,12 @@ public class ScreenGame extends HexagonScreen {
                         );
                     }
                 }
+
+                for (UUID uuid : gameManager.server.getSessionData().PlayerList.keySet()) {
+                    Player player = gameManager.server.getSessionData().PlayerList.get(uuid).getSecond();
+                    player.removeResource("FOOD", (player.population/500));
+                }
+
                 // Calculate the total amount of population first and then calculate the happiness
                 // Happiness depends on population and available jobs
                 for (int i = 0; i < currentMap.getCities().size(); i++) {
@@ -572,8 +606,8 @@ public class ScreenGame extends HexagonScreen {
         GameManager.instance.messageUtil.add("Please select a town to begin...", 10_000, Color.GREEN);
         GameManager.instance.messageUtil.actionBar("Please select a town to begin...", 15_000, Color.GREEN);
 
-        if(gameManager.server.isHost())
-            Logic.start();
+        /*if(gameManager.server.isHost())
+            Logic.start();*/
     }
 
 

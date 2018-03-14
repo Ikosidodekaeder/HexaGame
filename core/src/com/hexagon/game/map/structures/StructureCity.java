@@ -150,7 +150,7 @@ public class StructureCity extends Structure {
     public boolean update() {
         if (owner == null) return false;
 
-        float populationAdd = (happiness - 0.5f)*300;
+        float populationAdd = (happiness - 0.5f)*500;
         population += populationAdd;
         int maxPopulation = getMaxPopulation();
         if (population > maxPopulation) {

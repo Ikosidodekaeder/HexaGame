@@ -48,7 +48,9 @@ public class SidebarCityStats extends Sidebar {
         cityLevel(stage, city);
         population(stage, city);
         happiness(stage, city);
-        upgradeButton(stage, city);
+        if (city.getLevel() < 4) {
+            upgradeButton(stage, city);
+        }
 
         for (UiElement element : statusWindow.getElementList()) {
             element.setHeight(statusWindow.getElementList().get(0).getHeight() + 10);

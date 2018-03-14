@@ -288,11 +288,13 @@ public class GameManager {
 
 
     public Map<String, Integer> getPlayerResources() {
-        return PlayerResources;
+        return server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().resources;
+        //return PlayerResources;
     }
 
     public void setPlayerResources(Map<String, Integer> playerResources) {
-        PlayerResources = playerResources;
+        //PlayerResources = playerResources;
+        server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().resources = playerResources;
     }
 
 

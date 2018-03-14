@@ -310,7 +310,8 @@ public class ServerListener extends PacketListener {
                     PacketPlayerStatus player = (PacketPlayerStatus)args[0];
 
                     server.send(new PacketPlayerStatus(
-                            HexaServer.senderId,player.PlayerID,player.Stats
+                            HexaServer.senderId, player.PlayerID, player.Stats,
+                            player.claims, player.money, player.population, player.jobs
                     ));
                 }
             });
