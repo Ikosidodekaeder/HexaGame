@@ -68,6 +68,6 @@ public class PacketCityBuild extends Packet{
     @Override
     public String serialize() {
         return super.serialize() + arrayPosition.getX() + "," + arrayPosition.getY() + ";"
-                + building.name() + ";" + upgrade + ";";
+                + (building == null ? "null" : building.name()) + ";" + upgrade + ";";
     }
 }

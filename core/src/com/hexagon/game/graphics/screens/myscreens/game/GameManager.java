@@ -49,31 +49,33 @@ public class GameManager {
     public  ColorUtil       colorUtil;
     public  MessageUtil     messageUtil;
 
+    public int              jobModifier = 0;
+
     //It's the easiest way: quick and dirty yeah...please let no one ever read this piece of code...
     public final UUID       GlobalMarketID = UUID.fromString("26420bf8-982f-4a46-aef1-c79c655b82d6");
 
-    private Map<String,Integer> GlobalMarketResources = new HashMap<String, Integer>() {{
-        put("STONE",    100);
-        put("WOOD",     200);
-        put("ORE",      50);
-        put("FOOD",      200);
-        put("METAL",      10);
+    private Map<String,Float> GlobalMarketResources = new HashMap<String, Float>() {{
+        put("STONE",    50f);
+        put("WOOD",     100f);
+        put("ORE",      40f);
+        put("FOOD",      200f);
+        put("METAL",      10f);
     }};
 
     private Map<String,Integer> DefaultAmount = new Hashtable<String,Integer>() {{
-        put("STONE",    100);
-        put("WOOD",     200);
-        put("ORE",      50);
+        put("STONE",    50);
+        put("WOOD",     100);
+        put("ORE",      40);
         put("FOOD",      100);
-        put("METAL",      10);
+        put("METAL",      40);
     }};
 
     private Map<String,Integer> DefaultPrice = new Hashtable<String,Integer>() {{
         put("STONE",    80);
         put("WOOD",     40);
-        put("ORE",      110);
+        put("ORE",      21);
         put("FOOD",      20);
-        put("METAL",      200);
+        put("METAL",      310);
     }};
 
     public List<State>      states = new ArrayList<>();
@@ -306,18 +308,21 @@ public class GameManager {
         this.inputGame = inputGame;
     }
 
+    public int getPlayerResource(String str) {
+        return server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().getResource(str);
+    }
 
-    public Map<String, Integer> getPlayerResources() {
+    public Map<String, Float> getPlayerResources() {
         return server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().resources;
         //return PlayerResources;
     }
 
-    public void setPlayerResources(Map<String, Integer> playerResources) {
+    public void setPlayerResources(Map<String, Float> playerResources) {
         //PlayerResources = playerResources;
         server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().resources = playerResources;
     }
 
-    public void addGlobalResource(String str, int amount) {
+    public void addGlobalResource(String str, float amount) {
         if (GlobalMarketResources.containsKey(str)) {
             GlobalMarketResources.put(str, GlobalMarketResources.get(str) + amount);
         } else {
@@ -332,11 +337,14 @@ public class GameManager {
     public void removeGlobalResource(String str, int amount) {
         if (GlobalMarketResources.containsKey(str)) {
             GlobalMarketResources.put(str, GlobalMarketResources.get(str) - amount);
+        } else {
+            System.err.println("ERROR: " + str + " (" + amount + ") not in GlobalMarketResources");
+            Thread.dumpStack();
         }
     }
 
     public long getPrice(String str) {
-        int amount = GlobalMarketResources.get(str);
+        float amount = GlobalMarketResources.get(str);
         if (amount <= 0) {
             return -1;
         }
@@ -351,15 +359,19 @@ public class GameManager {
     }
 
 
-    public Map<String, Integer> getGlobalMarketResources() {
+    public Map<String, Float> getGlobalMarketResources() {
         return GlobalMarketResources;
     }
 
-    public void setGlobalMarketResources(Map<String, Integer> globalMarketResources) {
+    public void setGlobalMarketResources(Map<String, Float> globalMarketResources) {
         GlobalMarketResources = globalMarketResources;
     }
 
     public GroupWindow getStandardWindow() {
         return standardWindow;
+    }
+
+    public Map<String, Integer> getDefaultAmount() {
+        return DefaultAmount;
     }
 }

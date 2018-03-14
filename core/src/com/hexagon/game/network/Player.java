@@ -2,6 +2,7 @@ package com.hexagon.game.network;
 
 import com.badlogic.gdx.graphics.Color;
 import com.hexagon.game.map.HexMap;
+import com.hexagon.game.map.Point;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +15,13 @@ public class Player {
 
     public Color    color;
     public String   username;
-    public int      claims = 5;
+    public int      claims = 7;
     public long     money = 1000;
     public int      population = 0;
     public int      jobs = HexMap.DEFAULT_JOBS;
-    public Map<String, Integer> resources = new HashMap<>();
+    public Map<String, Float> resources = new HashMap<>();
+
+    public transient Point cityLocation;
 
     public Player(Color color, String username) {
         this.color = color;
@@ -34,12 +37,19 @@ public class Player {
                 + jobs + ";";
     }
 
-    public void addResource(String str, int amount) {
+    public void addResource(String str, float amount) {
         if (!resources.containsKey(str)) {
             resources.put(str, amount);
         } else {
             resources.put(str, resources.get(str) + amount);
         }
+    }
+
+    public int getResource(String str) {
+        if (resources.containsKey(str)) {
+            return (int) Math.floor(resources.get(str));
+        }
+        return 0;
     }
 
     public boolean hasResource(String str, int amount) {

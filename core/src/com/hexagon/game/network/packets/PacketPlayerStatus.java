@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class PacketPlayerStatus extends Packet {
 
-    public Map<String, Integer> Stats = new Hashtable<>();
+    public Map<String, Float> Stats = new Hashtable<>();
     public int claims;
     public long money;
     public int population;
@@ -23,7 +23,7 @@ public class PacketPlayerStatus extends Packet {
         super(PacketType.PLAYER_STATUS);
     }
 
-    public PacketPlayerStatus(UUID senderId,UUID playerID, Map<String,Integer> stats,
+    public PacketPlayerStatus(UUID senderId,UUID playerID, Map<String,Float> stats,
                               int claims, long money, int population, int jobs) {
         super(PacketType.PLAYER_STATUS, senderId);
         this.Stats      = stats;
@@ -34,14 +34,14 @@ public class PacketPlayerStatus extends Packet {
         this.jobs       = jobs;
     }
 
-    public PacketPlayerStatus(UUID senderId,UUID playerID, Map<String,Integer> stats, Player player) {
+    public PacketPlayerStatus(UUID senderId,UUID playerID, Map<String,Float> stats, Player player) {
         this(senderId, playerID, stats, player.claims, player.money, player.population, player.jobs);
     }
 
     @Override
     public String serialize() {
         StringBuilder   builder = new StringBuilder();
-        for(Map.Entry<String,Integer> entry : Stats.entrySet()){
+        for(Map.Entry<String,Float> entry : Stats.entrySet()){
             builder.append(entry).append(",");
         }
         builder.append(";");

@@ -149,8 +149,9 @@ public abstract class Packet {
                          || !(map.getTileAt(point).getStructure() instanceof StructureCity)) {
                      return null;
                  }
-                 StructureCity city = (StructureCity) GameManager.instance.getGame().getCurrentMap().getTileAt(point).getStructure();
+                 //StructureCity city = (StructureCity) GameManager.instance.getGame().getCurrentMap().getTileAt(point).getStructure();
                  int level = Integer.parseInt(arr[offset + 1]);
+                 StructureCity city = new StructureCity(level);
                  String[] buildings = arr[offset + 2].split(",");
                  float happiness = Float.parseFloat(arr[offset + 3]);
                  float population = Float.parseFloat(arr[offset + 4]);
@@ -184,10 +185,10 @@ public abstract class Packet {
                  return new PacketPlayerLoaded(senderId);
              case PLAYER_STATUS:{
                  String[] values = arr[offset].split(",");
-                 Map<String,Integer> payload = new Hashtable<>();
+                 Map<String,Float> payload = new Hashtable<>();
                  for (String stringResource : values) {
                      String[] arrResource = stringResource.split("=");
-                     payload.put(arrResource[0], Integer.parseInt(arrResource[1]));
+                     payload.put(arrResource[0], Float.parseFloat(arrResource[1]));
                  }
                  UUID playerId = UUID.fromString(arr[offset+1]);
 

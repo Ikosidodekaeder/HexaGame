@@ -6,13 +6,13 @@ package com.hexagon.game.map.structures;
 
 public enum CityBuildings {
 
-    BAKERY              ("Bakery", 50, 0, 0.01f, 30),
-    SUPERMARKET         ("Supermarket", 150, 0, 0.0125f, 50),
-    SCHOOL              ("School", 400, 1, 0.0175f, 100),
-    HIGHSCHOOL          ("Highschool", 2000, 1, 0.0225f, 250),
-    DISCO               ("Disco", 1000, 2, 0.0275f, 100),
-    PUBLIC_TRANSPORT    ("Public Transport", 6_000, 3, 0.03f, 300),
-    AIRPORT             ("Airport", 10_000, 4, 0.035f, 500),
+    BAKERY              ("Bakery", 50, 0, 0.01f, 10),
+    SUPERMARKET         ("Supermarket", 150, 0, 0.0125f, 20),
+    SCHOOL              ("School", 400, 1, 0.0175f, 40),
+    HIGHSCHOOL          ("Highschool", 2000, 1, 0.0225f, 100),
+    DISCO               ("Disco", 1000, 2, 0.0275f, 50),
+    PUBLIC_TRANSPORT    ("Public Transport", 6_000, 3, 0.03f, 200),
+    AIRPORT             ("Airport", 10_000, 4, 0.035f, 300),
     ;
 
     private String  friendlyName;

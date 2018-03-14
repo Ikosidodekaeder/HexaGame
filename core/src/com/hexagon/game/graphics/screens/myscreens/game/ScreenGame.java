@@ -477,7 +477,8 @@ public class ScreenGame extends HexagonScreen {
 
     private void renderDEBUGMETA(){
         batch.begin();
-        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS, " + renderedChunks + " Chunks, " + renderedTiles + " Tiles", 20, 20);
+        font.draw(batch, "" + Gdx.graphics.getFramesPerSecond() + " FPS, " + renderedChunks + " Chunks, " + renderedTiles + " Tiles, "
+                + "LastPacket: " + (System.currentTimeMillis() - HexaServer.lastPacketReceived), 20, 20);
         batch.end();
     }
 
@@ -518,22 +519,61 @@ public class ScreenGame extends HexagonScreen {
                     }
                     Structure structure = (Structure) tile.getStructure();
                     Player player = gameManager.server.getSessionData().PlayerList.get(tile.getOwner()).getSecond();
+                    float multiplier = 1;
+                    int emptyJobs = player.jobs - player.population;
+                    if (emptyJobs >= 250) {
+                        multiplier = 0.5f;
+                    } else if (emptyJobs >= 150) {
+                        multiplier = 0.75f;
+                    } else if (emptyJobs >= 50) {
+                        multiplier = 0.95f;
+                    }
+
+                    int cost = 5;
                     switch (structure.getType()) {
                         case MINE:
-                            player.addResource("ORE", 1);
+                            player.addResource("ORE", 1*multiplier);
                             break;
                         case FACTORY:
+                            // 12 ore -> 1 Metal
+                            if (player.hasResource("ORE", (int) (10*multiplier))) {
+                                player.removeResource("ORE", (int) (10*multiplier));
+                                player.addResource("METAL", 1*multiplier);
+                            }
+                            cost = 10;
                             break;
                         case QUARRY:
-                            player.addResource("STONE", 1);
+                            player.addResource("STONE", 1*multiplier);
                             break;
                         case FORESTRY:
-                            player.addResource("WOOD", 1);
+                            player.addResource("WOOD", 1*multiplier);
+                            cost = 2;
+                            break;
+                        case CROPS:
+                            player.addResource("FOOD", 3*multiplier);
+                            cost = 1;
                             break;
                         default:
                             break;
                     }
-                    player.money -= 1;
+
+                    player.money -= cost;
+                }
+
+                for (String resource : gameManager.getGlobalMarketResources().keySet()) {
+                    float amount = gameManager.getGlobalMarketResources().get(resource);
+                    float normalAmount = gameManager.getDefaultAmount().get(resource);
+
+                    float toModify = 0.1f;
+                    if (Math.abs(amount - normalAmount) >= 100) {
+                        toModify = 1;
+                    }
+
+                    if (amount > normalAmount) {
+                        gameManager.getGlobalMarketResources().put(resource, amount - toModify);
+                    } else if (amount < normalAmount) {
+                        gameManager.getGlobalMarketResources().put(resource, amount + toModify);
+                    }
                 }
 
                 // Update cities
@@ -552,8 +592,17 @@ public class ScreenGame extends HexagonScreen {
 
                 for (UUID uuid : gameManager.server.getSessionData().PlayerList.keySet()) {
                     Player player = gameManager.server.getSessionData().PlayerList.get(uuid).getSecond();
-                    player.removeResource("FOOD", (player.population/500) + 1);
+                    player.removeResource("FOOD", (player.population/250) + 1);
+                    if (player.getResource("FOOD") < 0.0f) {
+                        player.resources.put("FOOD", 0f);
+                    }
                     player.money += player.population*0.01;
+
+                    // If too many are unemployed
+                    if (player.population > player.jobs + 25) {
+                        GameManager.instance.jobModifier += 5;
+                        player.jobs = currentMap.getJobs(uuid);
+                    }
                 }
 
                 // Calculate the total amount of population first and then calculate the happiness

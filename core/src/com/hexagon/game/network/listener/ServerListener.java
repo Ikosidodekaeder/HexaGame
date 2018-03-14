@@ -14,8 +14,10 @@ import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
+import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketCityBuild;
+import com.hexagon.game.network.packets.PacketCityUpdate;
 import com.hexagon.game.network.packets.PacketDestroy;
 import com.hexagon.game.network.packets.PacketJoin;
 import com.hexagon.game.network.packets.PacketKeepAlive;
@@ -146,6 +148,7 @@ public class ServerListener extends PacketListener {
                     }
 
                     if (packet.getBuilding() == null) {
+                        server.send(new PacketCityBuild(packet.getArrayPosition(), packet.isUpgrade()));
                         return;
                     }
 
@@ -186,6 +189,22 @@ public class ServerListener extends PacketListener {
                     Tile tile = server.getSessionData().currentMap().getTileAt(build.getArrayPosition());
                     if (tile.getOwner() == null
                             || tile.getOwner().equals(build.getSenderId())) {
+
+                        if (tile.getOwner() == null && build.getStructureType() != null) {
+                            Player player = server.getSessionData().PlayerList.get(build.getOwner()).getSecond();
+                            if (player.claims <= 0) {
+                                // If the player has no claims left, cancel the packet!
+                                return;
+                            }
+                            int cost = GameManager.instance.getGame().getCurrentMap().getCostAt(build.getArrayPosition(), build.getStructureType(), build.getOwner());
+                            if (player.money <= cost) {
+                                // The player does not have enough money to buy this
+                                return;
+                            }
+                            player.claims--;
+                            player.money -= cost;
+                        }
+
                         // Respond
                         server.send(new PacketBuild(
                                         build.getArrayPosition(),
@@ -248,6 +267,9 @@ public class ServerListener extends PacketListener {
                 public void invoke(Object... args) throws Exception {
                     ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received CITY UPDATE" + HexaServer.WhatAmI(server));
 
+                    PacketCityUpdate packet = (PacketCityUpdate) args[0];
+
+                    server.send(new PacketCityUpdate(packet.getArrayPosition(), packet.getCity()));
                 }
             });
 
@@ -322,8 +344,8 @@ public class ServerListener extends PacketListener {
                     PacketTradeMoney packet = (PacketTradeMoney) args[0];
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADEMONEY"+ HexaServer.WhatAmI(server));
 
-                    //Sendback to client listner
-                    server.send(packet);
+                    //Send back to client listener
+                    server.send(new PacketTradeMoney(packet.dest, packet.source, packet.type, packet.originAmount));
                 }
             });
         }};

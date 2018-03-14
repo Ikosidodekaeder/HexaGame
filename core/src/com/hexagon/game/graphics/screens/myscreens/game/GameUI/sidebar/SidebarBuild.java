@@ -46,7 +46,7 @@ public class SidebarBuild extends Sidebar {
                     destroyMine(p,stage);
                     break;
                 case FOREST:
-                    addForestryButton(p, stage);
+                    addForestryButton(map, p, stage);
                     break;
                 case FORESTRY:
                     destroyForestryButton(p,stage);
@@ -55,7 +55,7 @@ public class SidebarBuild extends Sidebar {
                     destroyQuarry(p,stage);
                     break;
                 case ORE:
-                    addMine(p,stage);
+                    addMine(map, p,stage);
                     break;
                 default:
                     break;
@@ -64,11 +64,13 @@ public class SidebarBuild extends Sidebar {
             switch (tile.getBiome()){
                 case PLAINS:{
                     //addForestryButton(p, stage);
-                    //addQuarry(p,stage);
-                    addFactoryButton(p, stage);
+                    addQuarry(map, p,stage);
+                    addFactoryButton(map, p, stage);
+                    addStreetButton(map, p, stage);
+                    addCrops(map, p, stage);
                 }break;
                 case DESERT:{
-
+                    addStreetButton(map, p, stage);
                 }break;
                 case ICE:{
 
@@ -95,8 +97,8 @@ public class SidebarBuild extends Sidebar {
 
     }
 
-    private void addForestryButton(final Point p, final Stage stage) {
-        UiButton buttonForest = new UiButton("Build Forestry", 5, 0, 50, 0, 26);
+    private void addForestryButton(final HexMap map, final Point p, final Stage stage) {
+        UiButton buttonForest = new UiButton("Build Forestry " + map.getCostAt(p, StructureType.FORESTRY) + "$", 5, 0, 50, 0, 26);
         buttonForest.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -125,8 +127,8 @@ public class SidebarBuild extends Sidebar {
 
     }
 
-    private void addFactoryButton(final Point p, final Stage stage) {
-        UiButton buttonFactory = new UiButton("Build Factory", 5, 0, 50, 0, 26);
+    private void addFactoryButton(final HexMap map, final Point p, final Stage stage) {
+        UiButton buttonFactory = new UiButton("Build Factory " + map.getCostAt(p, StructureType.FACTORY) + "$", 5, 0, 50, 0, 26);
         buttonFactory.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -138,6 +140,36 @@ public class SidebarBuild extends Sidebar {
             }
         });
         statusWindow.add(buttonFactory, stage);
+    }
+
+    private void addStreetButton(final HexMap map, final Point p, final Stage stage) {
+        UiButton buttonStreet = new UiButton("Build Street " + map.getCostAt(p, StructureType.STREET) + "$", 5, 0, 50, 0, 26);
+        if (map.isNextTo(p, StructureType.STREET)
+                || map.isNextTo(p, StructureType.CITY)) {
+            buttonStreet.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    GameManager.instance.server.send(
+                            new PacketBuild(p, StructureType.STREET, HexaServer.senderId)
+                    );
+
+                    select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+                }
+            });
+        } else {
+            buttonStreet.getTextButton().getStyle().fontColor = Color.DARK_GRAY;
+            buttonStreet.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    GameManager.instance.messageUtil.add("Streets can only be placed", 10_000, Color.GOLD);
+                    GameManager.instance.messageUtil.add("next to cities or streets", 10_000, Color.GOLD);
+
+                    select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+                }
+            });
+        }
+
+        statusWindow.add(buttonStreet, stage);
     }
 
     private void destroyMine(final Point p, final Stage stage) {
@@ -155,8 +187,8 @@ public class SidebarBuild extends Sidebar {
 
     }
 
-    private void addMine(final Point p, final Stage stage) {
-        UiButton Mine = new UiButton("Add Mine", 5, 0, 50, 0, 26);
+    private void addMine(final HexMap map, final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Add Mine " + map.getCostAt(p, StructureType.MINE) + "$", 5, 0, 50, 0, 26);
         Mine.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -169,6 +201,22 @@ public class SidebarBuild extends Sidebar {
         });
         statusWindow.add(Mine, stage);
     }
+
+    private void addCrops(final HexMap map, final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Plant Crops " + map.getCostAt(p, StructureType.CROPS) + "$", 5, 0, 50, 0, 26);
+        Mine.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                GameManager.instance.server.send(
+                        new PacketBuild(p, StructureType.CROPS, HexaServer.senderId)
+                );
+                select(GameManager.instance.getGame().getCurrentMap(), p, stage);
+
+            }
+        });
+        statusWindow.add(Mine, stage);
+    }
+
 
 
     private void destroyQuarry(final Point p, final Stage stage) {
@@ -186,8 +234,8 @@ public class SidebarBuild extends Sidebar {
 
     }
 
-    private void addQuarry(final Point p, final Stage stage) {
-        UiButton Mine = new UiButton("Add Quarry", 5, 0, 50, 0, 26);
+    private void addQuarry(final HexMap map, final Point p, final Stage stage) {
+        UiButton Mine = new UiButton("Add Quarry " + map.getCostAt(p, StructureType.QUARRY) + "$", 5, 0, 50, 0, 26);
         Mine.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

@@ -65,6 +65,14 @@ public class ModelManager {
             if (structureType.getPaths() != null) {
                 for (String path : structureType.getPaths()) {
                     Model model = loadModel(path);
+
+                    if (structureType == StructureType.CROPS) {
+                        for (Material material : model.materials) {
+                            material.clear();
+                            material.set(ColorAttribute.createDiffuse(Color.LIME));
+                        }
+                    }
+
                     models.add(model);
                     for (Material material : model.materials) {
                         material.set(new IntAttribute(IntAttribute.CullFace, 0));

@@ -67,14 +67,14 @@ public class SessionData implements SessionActions {
         }
     }
 
-    public synchronized Map<String,Integer> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
+    public synchronized Map<String,Float> getPlayerResourceStatus(UUID playerID) throws RuntimeException{
         if (GameManager.instance.GlobalMarketID.equals(playerID)) {
             return GameManager.instance.getGlobalMarketResources();
         }
         if(PlayerList.containsKey(playerID)){
 
             //ConsoleColours.Print(ConsoleColours.CYAN_BACKGROUND+ConsoleColours.BLACK, "Start collecting Information for: " + playerID + "This is done here: "+ HexaServer.WhatAmI(GameManager.instance.server));
-            Map<String,Integer> result = PlayerList.get(playerID).getSecond().resources;
+            Map<String,Float> result = PlayerList.get(playerID).getSecond().resources;
 
             /*List<List<Component>> Components = Engine.getInstance().getComponentManager().groupByTypes(
                     HexaComponents.ORE,HexaComponents.WOOD,HexaComponents.STONE

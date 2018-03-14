@@ -142,8 +142,7 @@ public class ClientListener extends PacketListener {
                     HexMap map = GameManager.instance.getGame().getCurrentMap();
                     Tile tile = map.getTileAt(packet.getArrayPosition());
 
-                    if (tile.getOwner() == null
-                            || !tile.getOwner().equals(HexaServer.senderId)) {
+                    if (tile.getOwner() == null) {
                         // I don't own this tile, so I ignore this packet
                         return;
                     }
@@ -153,6 +152,8 @@ public class ClientListener extends PacketListener {
                         Player player = server.getSessionData().PlayerList.get(city.getOwner()).getSecond();
 
                         if (server.isHost()) {
+                            System.out.print("##### CITY BUILD UPGRADE " + player.username + ", " + city.getName() + ", lvl " + city.getLevel() + ", pop " + city.getPopulation()
+                                        + (packet.getBuilding() == null) + ", money " + player.money);
                             if (packet.getBuilding() == null) {
                                 int upgradePrice = city.getUpgradePrice();
                                 if (player.money < upgradePrice) {
@@ -164,29 +165,33 @@ public class ClientListener extends PacketListener {
                                 }
                                 player.money -= upgradePrice;
                                 city.setLevel(city.getLevel()+1);
+                                player.claims += 7 + city.getLevel();
                                 city.upgrade(tile, server);
                                 return;
                             }
                         }
 
-                        CityBuildings building = packet.getBuilding();
+                        if (tile.getOwner().equals(HexaServer.senderId)) {
+                            CityBuildings building = packet.getBuilding();
+                            if (building == null) return;
 
-                        if (!city.getCityBuildingsList().contains(building)) {
-                            if (player.money >= building.getCost()) {
-                                player.money -= building.getCost();
+                            if (!city.getCityBuildingsList().contains(building)) {
+                                if (player.money >= building.getCost()) {
+                                    player.money -= building.getCost();
 
-                                city.addBuilding(building);
+                                    city.addBuilding(building);
 
-                                GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
-                                GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
+                                    GameManager.instance.messageUtil.actionBar(building.getFriendlyName() + " has been bought!", 5000, Color.GREEN);
+                                    GameManager.instance.messageUtil.add(building.getFriendlyName() + " has been bought!", 7000, Color.GREEN);
 
-                                if (GameManager.instance.getCurrentState().getStateType() == StateType.CITY_VIEW) {
-                                    StateCityView stateCityView = (StateCityView) GameManager.instance.getCurrentState();
-                                    stateCityView.select(map, packet.getArrayPosition(), GameManager.instance.getStage());
+                                    if (GameManager.instance.getCurrentState().getStateType() == StateType.CITY_VIEW) {
+                                        StateCityView stateCityView = (StateCityView) GameManager.instance.getCurrentState();
+                                        stateCityView.select(map, packet.getArrayPosition(), GameManager.instance.getStage());
+                                    }
+                                } else {
+                                    GameManager.instance.messageUtil.actionBar("You don't have enough money!", 5000, Color.RED);
+                                    GameManager.instance.messageUtil.add("You don't have enough money!", 5000, Color.RED);
                                 }
-                            } else {
-                                GameManager.instance.messageUtil.actionBar("You don't have enough money!", 5000, Color.RED);
-                                GameManager.instance.messageUtil.add("You don't have enough money!", 5000, Color.RED);
                             }
                         }
                     }
@@ -299,6 +304,8 @@ public class ClientListener extends PacketListener {
                                         "Congratulations on your new town", 7000, Color.SKY);
                                 GameManager.instance.messageUtil.add(
                                         "Congratulations on your new town", 7000, Color.SKY);
+
+                                player.cityLocation = packetBuild.getArrayPosition();
                             }
                         } else {
                             GameManager.instance.messageUtil.add(
@@ -310,7 +317,9 @@ public class ClientListener extends PacketListener {
 
                     player.jobs = map.getJobs(packetBuild.getOwner());
 
-                    GameManager.instance.getInputGame().updateSelectedInfo();
+                    if (packetBuild.getOwner().equals(HexaServer.senderId)) {
+                        GameManager.instance.getInputGame().updateSelectedInfo();
+                    }
                 }
             });
 
@@ -334,18 +343,24 @@ public class ClientListener extends PacketListener {
                 @Override
                 public void invoke(Object... args) throws Exception {
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received PLAYER_STATUS" + HexaServer.WhatAmI(server));
-                    PacketPlayerStatus player = (PacketPlayerStatus)args[0];
+                    PacketPlayerStatus packet = (PacketPlayerStatus)args[0];
 
-                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received Packet for(PLAYERID): " + player.PlayerID + "|| I am(SERVERID): "+HexaServer.senderId  + HexaServer.WhatAmI(server));
-                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"   It contains this payload: " + player.Stats + HexaServer.WhatAmI(server));
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"Received Packet for(PLAYERID): " + packet.PlayerID + "|| I am(SERVERID): "+HexaServer.senderId  + HexaServer.WhatAmI(server));
+                    ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"   It contains this payload: " + packet.Stats + HexaServer.WhatAmI(server));
 
-                    if(player.PlayerID.equals(HexaServer.senderId)){
-                        ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"        Set given stats for:" + player.PlayerID + "|| I am: " + HexaServer.WhatAmI(server));
+                    if(packet.PlayerID.equals(HexaServer.senderId)){
+                        ConsoleColours.Print(ConsoleColours.BLACK+ConsoleColours.YELLOW_BACKGROUND,"        Set given stats for:" + packet.PlayerID + "|| I am: " + HexaServer.WhatAmI(server));
 
-                        GameManager.instance.setPlayerResources(player.Stats);
+                        Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
+                        player.claims       = packet.claims;
+                        player.money        = packet.money;
+                        player.population   = packet.population;
+                        player.jobs         = packet.jobs;
+                        GameManager.instance.setPlayerResources(packet.Stats);
+
                     }
-                    if(player.PlayerID.equals(GameManager.instance.GlobalMarketID)){
-                        GameManager.instance.setGlobalMarketResources(player.Stats);
+                    if(packet.PlayerID.equals(GameManager.instance.GlobalMarketID)){
+                        GameManager.instance.setGlobalMarketResources(packet.Stats);
                     }
 
                 }
@@ -440,6 +455,7 @@ public class ClientListener extends PacketListener {
                     city.setHappiness(packet.getCity().getHappiness());
                     city.setPopulation(packet.getCity().getPopulation());
                     if (city.getLevel() != packet.getCity().getLevel()) {
+                        ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.CYAN_BACKGROUND,"CITY UPGRADE " + city.getName() + " / " + city.getPopulation() + ", " + city.getLevel() + HexaServer.WhatAmI(server));
                         city.setLevel(packet.getCity().getLevel());
                         city.upgrade(tile, server);
                     }
@@ -497,7 +513,7 @@ public class ClientListener extends PacketListener {
                     PacketTradeMoney packet = (PacketTradeMoney) args[0];
                     ConsoleColours.Print(ConsoleColours.BLACK_BOLD+ConsoleColours.YELLOW_BACKGROUND,"Received TRADEMONEY"+ HexaServer.WhatAmI(server));
 
-                    if(server.isHost()){
+                    if (server.isHost()) {
                         Player player = server.getSessionData().PlayerList.get(packet.source).getSecond();
                         String resource = packet.type.name();
                         long price = GameManager.instance.getPrice(resource);
@@ -517,7 +533,7 @@ public class ClientListener extends PacketListener {
 
                                 player.money -= price;
                             }
-                        } else {
+                        } else if (packet.originAmount < 0) {
                             // Player sells to market
                             if (player.hasResource(resource, amount)) {
                                 player.removeResource(resource, amount);

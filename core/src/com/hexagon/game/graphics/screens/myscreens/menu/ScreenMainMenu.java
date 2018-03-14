@@ -140,8 +140,14 @@ public class ScreenMainMenu extends HexagonScreen {
         final FadeWindow subwindow2 = new FadeWindow(fadeWindow.getX() + fadeWindow.getWidth() + 10, fadeWindow.getY(), 800 - fadeWindow.getWidth(), 600, stage);
         subwindow2.add(new UiImage(0, 0, 558, 600, "window_small.png"), stage);
 
-        UiButton text2 = new UiButton("This is subwindow 2", 40, subwindow2.getHeight() - 60, 100, 40);
+        UiButton text2 = new UiButton("Johannes Lüke", 40, subwindow2.getHeight() - 60, 100, 40);
         subwindow2.add(text2, stage);
+
+        UiButton text3 = new UiButton("Martin Schütz", 40, subwindow2.getHeight() - 120, 100, 40);
+        subwindow2.add(text3, stage);
+
+        UiButton text4 = new UiButton("Sven Vollmar", 40, subwindow2.getHeight() - 180, 100, 40);
+        subwindow2.add(text4, stage);
 
         subwindow2.updateElements();
         standardWindow.getWindowList().add(subwindow2);
@@ -151,7 +157,7 @@ public class ScreenMainMenu extends HexagonScreen {
          */
 
         UiButton buttonPlay = new UiButton("Play", 20, fadeWindow.getHeight() - 60, 50, 40);
-        UiButton buttonSubwindow2 = new UiButton("Subwindow 2", 20, buttonPlay.getY() - 50, 50, 40);
+        UiButton buttonSubwindow2 = new UiButton("Credits", 20, buttonPlay.getY() - 50, 50, 40);
 
         buttonPlay.addListener(new ChangeListener() {
             @Override

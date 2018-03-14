@@ -112,7 +112,7 @@ public class StructureCity extends Structure {
 
     public int getMaxPopulation() {
         // ((level + 1)^2)*1000
-        return (int) (Math.pow(level + 1, 2.2)*300);
+        return (int) (Math.pow(level + 1, 2)*300);
     }
 
     public void addBuilding(CityBuildings building) {
@@ -144,7 +144,6 @@ public class StructureCity extends Structure {
             Player player = GameManager.instance.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
             int unemployed = player.population - player.jobs;
 
-            System.out.println(unemployed);
             if (unemployed > 0) {
                 newHappiness -= unemployed * 0.0005;
             }

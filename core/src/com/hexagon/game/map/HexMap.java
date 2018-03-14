@@ -12,6 +12,7 @@ import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
 
 import java.util.ArrayList;
@@ -122,7 +123,7 @@ public class HexMap {
     }
 
     public int getJobs(UUID owner) {
-        int jobs = DEFAULT_JOBS;
+        int jobs = DEFAULT_JOBS + GameManager.instance.jobModifier;
         for (int i=0; i<builtTiles.size(); i++) {
             Tile tile = builtTiles.get(i);
             if (tile.getOwner() != null
@@ -144,6 +145,25 @@ public class HexMap {
         TileLocation loc = tile.getTileLocation();
 
         if (owner != null) {
+            if (GameManager.instance.server.isOfflineGame()
+                    || (GameManager.instance.server.isHost() && owner.equals(HexaServer.senderId))) {
+                // Only to handle the money and claim logic for the host
+                if (tile.getOwner() == null) {
+                    Player player = GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond();
+                    if (player.claims <= 0) {
+                        // If the player has no claims left, cancel the packet!
+                        return;
+                    }
+                    int cost = GameManager.instance.getGame().getCurrentMap().getCostAt(new Point(x, y), type, owner);
+                    if (player.money <= cost) {
+                        // The player does not have enough money to buy this
+                        return;
+                    }
+                    player.claims--;
+                    player.money -= cost;
+                }
+            }
+
             HexModel colorModel = new HexModel(new ModelInstance(ModelManager.getInstance().getColorModel(
                     GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond().color
             )));
@@ -151,10 +171,6 @@ public class HexMap {
             renderTile.setOwnerColor(colorModel);
             tile.setOwner(owner);
 
-            if (GameManager.instance.server.isHost()) {
-                Player player = GameManager.instance.server.getSessionData().PlayerList.get(owner).getSecond();
-                player.claims--;
-            }
         }
 
         if (type == StructureType.FOREST || type == StructureType.FORESTRY) {
@@ -220,6 +236,27 @@ public class HexMap {
             model.move((float) loc.getX(), 0.001f, (float) loc.getY());
             renderTile.getStructures().add(model);
             tile.setStructure(new Structure(type));
+        } else if (type == StructureType.STREET) {
+            HexModel model = new HexModel(new ModelInstance(
+                    ModelManager.getInstance().getStructureModels().get(StructureType.STREET).get(0)
+            ));
+            model.move((float) loc.getX(), 0.015f, (float) loc.getY());
+            renderTile.getStructures().add(model);
+            tile.setStructure(new Structure(type));
+        } else if (type == StructureType.CROPS) {
+            HexModel model = new HexModel(new ModelInstance(
+                    ModelManager.getInstance().getStructureModels().get(StructureType.CROPS).get(0)
+            ));
+            model.move((float) loc.getX(), 0.005f, (float) loc.getY());
+            renderTile.getStructures().add(model);
+            tile.setStructure(new Structure(type));
+        } else if (type == StructureType.QUARRY) {
+            /*HexModel model = new HexModel(new ModelInstance(
+                    ModelManager.getInstance().getStructureModels().get(StructureType.QUARRY).get(0)
+            ));
+            model.move((float) loc.getX(), 0.005f, (float) loc.getY());
+            renderTile.getStructures().add(model);*/
+            tile.setStructure(new Structure(type));
         }
 
         if (owner != null) {
@@ -233,13 +270,108 @@ public class HexMap {
         tile.setStructure(null);
         renderTile.getStructures().clear();
 
-        if (tile.getOwner() != null && builtTiles.contains(tile)) {
+        /*if (tile.getOwner() != null && builtTiles.contains(tile)) {
             builtTiles.remove(tile);
             if (GameManager.instance.server.isHost()) {
                 Player player = GameManager.instance.server.getSessionData().PlayerList.get(tile.getOwner()).getSecond();
                 player.claims++;
             }
+        }*/
+    }
+
+    public boolean hasStructure(Point p, StructureType type) {
+        Tile tile = getTileAt(p);
+        return tile.getStructure() != null && tile.getStructure().getType() == type;
+    }
+
+    public boolean isNextTo(Point current, StructureType type) {
+        Point north = new Point(current.x, current.y - 1);
+
+        if (hasStructure(north, type)) {
+            return true;
         }
+
+        Point northEast;
+        if ((current.x & 1) == 1) {
+            // if x is UNEVEN, add 1 to x for north east
+            northEast = new Point(current.x + 1, current.y);
+        } else {
+            // if x is EVEN, add 1 to x and remove 1 from y for north east
+            northEast = new Point(current.x + 1, current.y - 1);
+        }
+
+        if (hasStructure(northEast, type)) {
+            return true;
+        }
+
+        Point southEast;
+        if ((current.x & 1) == 1) {
+            // if x is UNEVEN, add 1 to x and 1 to y for south east
+            southEast = new Point(current.x + 1, current.y + 1);
+        } else {
+            // if x is EVEN, add 1 to x for south east
+            southEast = new Point(current.x + 1, current.y);
+        }
+
+        if (hasStructure(southEast, type)) {
+            return true;
+        }
+
+        Point south = new Point(current.x, current.y + 1);
+
+        if (hasStructure(south, type)) {
+            return true;
+        }
+
+        Point southWest;
+        if ((current.x & 1) == 1) {
+            // if x is UNEVEN, remove 1 from x and add 1 to y for south west
+            southWest = new Point(current.x - 1, current.y + 1);
+        } else {
+            // if x is EVEN, remove 1 from x for south west
+            southWest = new Point(current.x - 1, current.y);
+        }
+
+        if (hasStructure(southWest, type)) {
+            return true;
+        }
+
+        Point northWest;
+        if ((current.x & 1) == 1) {
+            // if x is UNEVEN, remove 1 from x for north west
+            northWest = new Point(current.x - 1, current.y);
+        } else {
+            // if x is EVEN, remove 1 from x and y for north west
+            northWest = new Point(current.x - 1, current.y - 1);
+        }
+
+        if (hasStructure(northWest, type)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public int getCostAt(Point p, StructureType structureType) {
+        return getCostAt(p, structureType, HexaServer.senderId);
+    }
+
+    public int getCostAt(Point p, StructureType structureType, UUID uuid) {
+        int cost = structureType.getCost();
+        if (isNextTo(p, StructureType.STREET)) {
+            cost *= 0.75;
+        } else if (isNextTo(p, StructureType.CITY)) {
+            cost *= 1.5;
+        }
+        Point city = GameManager.instance.server.getSessionData().PlayerList.get(uuid).getSecond().cityLocation;
+        if (city != null) {
+            double distance = Math.pow(city.getX() - p.getX(), 2) + Math.pow(city.getY() - p.getY(), 2);
+            if (distance >= 3 * 3) {
+                cost += Math.sqrt(distance) * 10;
+            }
+        }
+        return cost;
     }
 
     public List<StructureCity> getCities() {

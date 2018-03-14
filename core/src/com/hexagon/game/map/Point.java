@@ -6,8 +6,8 @@ package com.hexagon.game.map;
 
 public class Point {
 
-    private int x;
-    private int y;
+    public int x;
+    public int y;
 
 
 

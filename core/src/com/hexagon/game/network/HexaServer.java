@@ -6,9 +6,11 @@ import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
+import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
+import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketTradeMoney;
@@ -60,6 +62,7 @@ public class HexaServer {
 
     public long                 lastKeepAliveSent = System.currentTimeMillis();
     public long                 lastPlayerupdate = System.currentTimeMillis();
+    public static long          lastPacketReceived = System.currentTimeMillis();
 
     private SessionData         sessionData;
     private boolean             offlineGame = false;
@@ -156,6 +159,26 @@ public class HexaServer {
     }
 
     public void send(Packet packet) {
+        if (packet instanceof PacketBuild) {
+            // Check if the player has enough money to build here
+            PacketBuild packetBuild = (PacketBuild) packet;
+            if (packetBuild.getOwner() != null
+                    && packetBuild.getOwner().equals(HexaServer.senderId)
+                    && packetBuild.getStructureType() != null) {
+                Player player = getSessionData().PlayerList.get(HexaServer.senderId).getSecond();
+                if (player.claims <= 0) {
+                    GameManager.instance.messageUtil.actionBar("You don't have enough claims!", 5000, Color.RED);
+                    GameManager.instance.messageUtil.add("Upgrade your city to get more claims.");
+                    return;
+                }
+                int cost = GameManager.instance.getGame().getCurrentMap().getCostAt(packetBuild.getArrayPosition(), packetBuild.getStructureType());
+                if (player.money <= cost) {
+                    GameManager.instance.messageUtil.actionBar("You don't have enough money!", 5000, Color.RED);
+                    return;
+                }
+            }
+        }
+
         if (isHost() && packet.getSenderId().equals(HexaServer.senderId)
                 && packet.getType() != PacketType.KEEPALIVE) {
             try {
@@ -205,7 +228,8 @@ public class HexaServer {
 
                             Packet packet = sendBuffer.get(i);
 
-                            System.out.println("(" + isHost() + ") Sending " + packet.getClass().getName() + " --> '" + packet.serialize() + "'");
+                            System.out.print("(" + isHost() + ") Sending " + packet.getClass().getName() + " --> '");
+                            System.out.println(packet.serialize() + "'");
                             out.println(packet.serialize());
                             out.flush();
                         }
@@ -250,15 +274,16 @@ public class HexaServer {
                             socket.setSoTimeout(TIMEOUT);
                             readAmount++;
                             String stringPacket = in.nextLine();
+                            lastPacketReceived = System.currentTimeMillis();
                             if (stringPacket.equals("")) {
                                 System.out.println("I received an empty packet.");
                             } else {
-                                System.out.println("I received a packet! " + stringPacket);
+                                //System.out.println("I received a packet! " + stringPacket);
                                 Packet packet = Packet.deserialize(stringPacket);
                                 if (packet == null) {
                                     System.out.println("Packet is null :(");
                                 } else {
-                                    System.out.println(packet.getType().name());
+                                    //System.out.println(packet.getType().name());
                                     synchronized (receivingLock) {
                                         toCall.add(packet);
                                     }
@@ -306,7 +331,7 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected() && isHost()) {
-            if(System.currentTimeMillis() - lastPlayerupdate >= 750){
+            if(System.currentTimeMillis() - lastPlayerupdate >= 500){
                 lastPlayerupdate = System.currentTimeMillis();
                 if (getSessionData() != null && isHost()) {
                     for (UUID id : getSessionData().PlayerList.keySet()) {
@@ -314,7 +339,7 @@ public class HexaServer {
                     }
                 }
             }
-            if (System.currentTimeMillis() - lastKeepAliveSent >= 4_000) {
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 5_000) {
                 broadcastKeepAlive();
             }
         }
@@ -369,10 +394,12 @@ public class HexaServer {
                   senderId, playerID,this.getSessionData().getPlayerResourceStatus(playerID),
                   this.getSessionData().PlayerList.get(playerID).getSecond()));
         } catch (RuntimeException e) {
-            send(new PacketPlayerStatus(senderId,playerID,new HashMap<String, Integer>(){{
-                put("ORE",-1);
-                put("WOOD",-1);
-                put("STONE",-1);
+            send(new PacketPlayerStatus(senderId,playerID,new HashMap<String, Float>(){{
+                put("ORE",-1f);
+                put("WOOD",-1f);
+                put("STONE",-1f);
+                put("METAL",-1f);
+                put("FOOD",-1f);
             }}, 0, 1, 0, 0));
         }
     }
