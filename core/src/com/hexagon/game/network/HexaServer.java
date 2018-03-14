@@ -13,6 +13,7 @@ import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketTradeMoney;
 import com.hexagon.game.network.packets.PacketType;
+import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.Usernames;
 
 import java.io.IOException;
@@ -305,7 +306,7 @@ public class HexaServer {
 
     public void callEvents() {
         if (socket.isConnected() && isHost()) {
-            if(System.currentTimeMillis() - lastPlayerupdate >= 2_000){
+            if(System.currentTimeMillis() - lastPlayerupdate >= 750){
                 lastPlayerupdate = System.currentTimeMillis();
                 if (getSessionData() != null && isHost()) {
                     for (UUID id : getSessionData().PlayerList.keySet()) {
@@ -313,7 +314,7 @@ public class HexaServer {
                     }
                 }
             }
-            if (System.currentTimeMillis() - lastKeepAliveSent >= 3_500) {
+            if (System.currentTimeMillis() - lastKeepAliveSent >= 4_000) {
                 broadcastKeepAlive();
             }
         }

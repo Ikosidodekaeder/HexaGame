@@ -28,6 +28,7 @@ import com.hexagon.game.util.MenuUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class GameManager {
     //It's the easiest way: quick and dirty yeah...please let no one ever read this piece of code...
     public final UUID       GlobalMarketID = UUID.fromString("26420bf8-982f-4a46-aef1-c79c655b82d6");
 
-    private Map<String,Integer> GlobalMarketResources = new Hashtable<String,Integer>() {{
+    private Map<String,Integer> GlobalMarketResources = new HashMap<String, Integer>() {{
         put("STONE",    100);
         put("WOOD",     200);
         put("ORE",      50);
