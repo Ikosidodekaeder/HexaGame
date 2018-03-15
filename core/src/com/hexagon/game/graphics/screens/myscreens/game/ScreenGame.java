@@ -535,7 +535,7 @@ public class ScreenGame extends HexagonScreen {
                             player.addResource("ORE", 1*multiplier);
                             break;
                         case FACTORY:
-                            // 12 ore -> 1 Metal
+                            // 10 ore -> 1 Metal
                             if (player.hasResource("ORE", (int) (10*multiplier))) {
                                 player.removeResource("ORE", (int) (10*multiplier));
                                 player.addResource("METAL", 1*multiplier);

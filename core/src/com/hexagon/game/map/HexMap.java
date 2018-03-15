@@ -8,12 +8,14 @@ import com.hexagon.game.map.structures.Structure;
 import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.map.structures.resources.StructureResource;
+import com.hexagon.game.map.tiles.Biome;
 import com.hexagon.game.map.tiles.Chunk;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.RenderTile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
+import com.hexagon.game.util.SettingsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,14 @@ public class HexMap {
                 if (arrayX >= tiles.length
                         || arrayY >= tiles[arrayX].length) {
                     continue;
+                }
+                if (SettingsUtil.isLowGraphics()) {
+                    // When using low graphics, don't display ICE and WATER tiles
+                    Tile worldTile = tiles[arrayX][arrayY];
+                    if (worldTile.getBiome() == Biome.WATER
+                            || worldTile.getBiome() == Biome.ICE) {
+                        continue;
+                    }
                 }
                 RenderTile tile = tiles[arrayX][arrayY].getRenderTile();
                 chunk.getRenderTiles().add(tile);

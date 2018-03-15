@@ -32,6 +32,7 @@ public class CameraHelper {
     }
 
     public void moveTo(Vector3 destination, boolean unlock) {
+        if (destination == null) return;
         this.destination    = destination.cpy();
         this.start          = camera.position.cpy();
         this.locked         = true;

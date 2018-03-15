@@ -9,12 +9,17 @@ import com.hexagon.game.map.Point;
 import com.hexagon.game.models.HexModel;
 import com.hexagon.game.models.HexModelAnimated;
 import com.hexagon.game.models.RenderTile;
+import com.hexagon.game.util.SettingsUtil;
 
 /**
  * Created by Sven on 16.02.2018.
  */
 
 public class Chunk {
+
+    public static int RANGE_X = 22;
+    public static int RANGE_Z_1 = 4;
+    public static int RANGE_Z_2 = 19;
 
     private Array<RenderTile> renderTiles = new Array<>();
 
@@ -77,17 +82,20 @@ public class Chunk {
 
     public void render(ModelBatch modelBatch, Environment environment, Camera camera, float delta) {
         for (RenderTile tile : renderTiles) {
-            if (tile.getTileLocation().getX() < camera.position.x - 22
-                    || tile.getTileLocation().getX() > camera.position.x + 22) {
+            if (tile.getTileLocation().getX() < camera.position.x - RANGE_X
+                    || tile.getTileLocation().getX() > camera.position.x + RANGE_X) {
                 continue;
             }
-            if (tile.getTileLocation().getY() > camera.position.z + 6
-                    || tile.getTileLocation().getY() < camera.position.z - 19) {
+            if (tile.getTileLocation().getY() > camera.position.z + RANGE_Z_1
+                    || tile.getTileLocation().getY() < camera.position.z - RANGE_Z_2) {
                 continue;
             }
-            HexModel model = tile.getModel();
-            if (model instanceof HexModelAnimated) {
-                ((HexModelAnimated) model).update(delta);
+            if (!SettingsUtil.isLowGraphics()) {
+                // Only when using good graphics, update the animated models
+                HexModel model = tile.getModel();
+                if (model instanceof HexModelAnimated) {
+                    ((HexModelAnimated) model).update(delta);
+                }
             }
             /*modelBatch.render(model.getModelInstance(), environment);
             ScreenGame.renderedTiles++;

@@ -57,6 +57,7 @@ public class StateMainGame extends State{
                 return;
             }
 
+            sidebarBuildWindow.deselect(stage);
             gameManager.setCurrentState(StateType.CITY_VIEW);
             gameManager.getCurrentState().select(map, p, stage);
             return;

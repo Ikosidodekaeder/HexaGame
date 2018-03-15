@@ -20,6 +20,7 @@ import com.hexagon.game.graphics.ui.windows.WindowNotification;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.packets.PacketRegister;
 import com.hexagon.game.util.MenuUtil;
+import com.hexagon.game.util.SettingsUtil;
 
 /**
  * Created by Sven on 14.12.2017.
@@ -158,6 +159,7 @@ public class ScreenMainMenu extends HexagonScreen {
 
         UiButton buttonPlay = new UiButton("Play", 20, fadeWindow.getHeight() - 60, 50, 40);
         UiButton buttonSubwindow2 = new UiButton("Credits", 20, buttonPlay.getY() - 50, 50, 40);
+        final UiButton buttonGraphics = new UiButton("Use Low\nGraphics", 20, buttonSubwindow2.getY() - 85, 50, 40);
 
         buttonPlay.addListener(new ChangeListener() {
             @Override
@@ -181,8 +183,21 @@ public class ScreenMainMenu extends HexagonScreen {
             }
         });
 
+        buttonGraphics.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                SettingsUtil.setLowGraphics(!SettingsUtil.isLowGraphics());
+                if (SettingsUtil.isLowGraphics()) {
+                    buttonGraphics.getTextButton().setText("Use Good\nGraphics");
+                } else {
+                    buttonGraphics.getTextButton().setText("Use Low\nGraphics");
+                }
+            }
+        });
+
         fadeWindow.add(buttonPlay, stage);
         fadeWindow.add(buttonSubwindow2, stage);
+        fadeWindow.add(buttonGraphics, stage);
 
         fadeWindow.updateElements();
 
