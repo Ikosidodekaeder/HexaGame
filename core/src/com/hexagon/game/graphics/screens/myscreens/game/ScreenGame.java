@@ -254,7 +254,7 @@ public class ScreenGame extends HexagonScreen {
         environment.shadowMap = shadowLight;
     }
 
-    private void createMap(HexMap hexMap){
+    private void createMap(HexMap hexMap) {
         if (hexMap == null) {
             return;
         }

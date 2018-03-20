@@ -73,6 +73,9 @@ public class StateMainGame extends State{
     @Override
     public void render(ShapeRenderer renderer) {
         //sidebarResourcesWindow.statusWindow.render(renderer);
+        if (gameManager.server.getSessionData().PlayerList.get(HexaServer.senderId).getSecond().money <= -1500) {
+            GameManager.instance.setCurrentState(StateType.GAME_OVER);
+        }
     }
 
     @Override
