@@ -6,6 +6,7 @@ import com.hexagon.game.map.Point;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Sven on 08.03.2018.
@@ -15,6 +16,7 @@ public class Player {
 
     public Color    color;
     public String   username;
+    public UUID     uuid;
     public int      claims = 7;
     public long     money = 1000;
     public int      population = 0;
@@ -23,9 +25,10 @@ public class Player {
 
     public transient Point cityLocation;
 
-    public Player(Color color, String username) {
+    public Player(Color color, String username, UUID uuid) {
         this.color = color;
         this.username = username;
+        this.uuid = uuid;
         addResource("FOOD", 100);
     }
 

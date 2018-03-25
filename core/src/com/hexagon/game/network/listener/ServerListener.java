@@ -14,7 +14,6 @@ import com.hexagon.game.map.structures.StructureCity;
 import com.hexagon.game.map.tiles.Tile;
 import com.hexagon.game.network.HexaServer;
 import com.hexagon.game.network.Player;
-import com.hexagon.game.network.packets.Packet;
 import com.hexagon.game.network.packets.PacketBuild;
 import com.hexagon.game.network.packets.PacketCityBuild;
 import com.hexagon.game.network.packets.PacketCityUpdate;
@@ -103,7 +102,7 @@ public class ServerListener extends PacketListener {
                     ConsoleColours.Print(ConsoleColours.WHITE_BOLD+ConsoleColours.PURPLE_BACKGROUND,"Received JOIN" + HexaServer.WhatAmI(server));
                     PacketJoin packet = (PacketJoin) args[0];
 
-                    Player player = new Player(GameManager.instance.colorUtil.getNext(), packet.getUsername());
+                    Player player = new Player(GameManager.instance.colorUtil.getNext(), packet.getUsername(), packet.getSenderId());
 
                     server.getSessionData().addNewPlayer(
                             packet.getSenderId(),

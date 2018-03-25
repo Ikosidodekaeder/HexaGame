@@ -123,6 +123,10 @@ public class ScreenMainMenu extends HexagonScreen {
         playSingleplayer.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                if (GameManager.instance.server != null) {
+                    GameManager.instance.server.disconnect();
+                    GameManager.instance.server = null;
+                }
                 ScreenManager.getInstance().setCurrentScreen(ScreenType.GENERATOR);
             }
         });

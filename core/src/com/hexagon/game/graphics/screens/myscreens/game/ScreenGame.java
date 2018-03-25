@@ -31,6 +31,7 @@ import com.hexagon.game.Logic.Components.HexaComponentOwner;
 import com.hexagon.game.Logic.Components.HexaComponentStone;
 import com.hexagon.game.Logic.Components.HexaComponentWood;
 import com.hexagon.game.Logic.HexaComponents;
+import com.hexagon.game.ai.ComputerPlayer;
 import com.hexagon.game.graphics.ModelManager;
 import com.hexagon.game.graphics.screens.HexagonScreen;
 import com.hexagon.game.graphics.screens.ScreenManager;
@@ -65,6 +66,7 @@ import java.util.UUID;
 
 import de.svdragster.logica.components.Component;
 import de.svdragster.logica.manager.Entity.Entity;
+import de.svdragster.logica.util.Pair;
 import de.svdragster.logica.util.SystemNotifications.NotificationNewEntity;
 import de.svdragster.logica.util.SystemNotifications.NotificationUpdate;
 import de.svdragster.logica.world.Engine;
@@ -497,6 +499,13 @@ public class ScreenGame extends HexagonScreen {
             }
             callEventsTime += delta;
             if (callEventsTime >= 0.2f) {
+                for (Pair<Entity, Player> p : gameManager.server.getSessionData().PlayerList.values()) {
+                    Player player = p.getSecond();
+                    if (player instanceof ComputerPlayer) {
+                        ((ComputerPlayer) player).update();
+                    }
+                }
+
                 gameManager.server.callEvents();
                 callEventsTime = 0;
 

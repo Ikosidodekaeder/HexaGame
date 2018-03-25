@@ -420,7 +420,7 @@ public class ClientListener extends PacketListener {
                             for (UUID uuid : jsonHexMap.getPlayers().keySet()) {
                                 Player player = jsonHexMap.getPlayers().get(uuid);
                                 server.getSessionData().addNewPlayer(uuid, player.username,
-                                        new Player(player.color, player.username));
+                                        new Player(player.color, player.username, uuid));
                             }
                         }
                     }

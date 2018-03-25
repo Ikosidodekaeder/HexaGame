@@ -182,7 +182,7 @@ public class GameManager {
 
         if (isHost) {
             //HexaServer.senderId = UUID.fromString("a84223f7-f8dd-4ea4-8494-25ef9d27a1a1");
-            Player player = new Player(colorUtil.getNext(), HexaServer.username);
+            Player player = new Player(colorUtil.getNext(), HexaServer.username, HexaServer.senderId);
             server.getSessionData().addNewPlayer(
                     HexaServer.senderId,
                     "HOST_" + HexaServer.username,
@@ -196,7 +196,8 @@ public class GameManager {
                     "Market",
                     new Player(
                             new Color(0x00ff00),
-                            "Market"
+                            "Market",
+                            GlobalMarketID
                     )
             );
 

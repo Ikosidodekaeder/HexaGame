@@ -2,11 +2,11 @@ package com.hexagon.game.network;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.hexagon.game.ai.ComputerPlayer;
 import com.hexagon.game.graphics.screens.ScreenManager;
 import com.hexagon.game.graphics.screens.ScreenType;
 import com.hexagon.game.graphics.screens.myscreens.game.GameManager;
 import com.hexagon.game.graphics.ui.windows.WindowNotification;
-import com.hexagon.game.map.structures.StructureType;
 import com.hexagon.game.network.listener.ClientListener;
 import com.hexagon.game.network.listener.ServerListener;
 import com.hexagon.game.network.packets.Packet;
@@ -15,7 +15,6 @@ import com.hexagon.game.network.packets.PacketKeepAlive;
 import com.hexagon.game.network.packets.PacketPlayerStatus;
 import com.hexagon.game.network.packets.PacketTradeMoney;
 import com.hexagon.game.network.packets.PacketType;
-import com.hexagon.game.util.ConsoleColours;
 import com.hexagon.game.util.Usernames;
 
 import java.io.IOException;
@@ -97,13 +96,30 @@ public class HexaServer {
 
         sessionData = new SessionData();
         sessionData.addNewPlayer(HexaServer.senderId,"OFFLINE_HOST",
-                new Player(GameManager.instance.colorUtil.getNext(), HexaServer.username));
+                new Player(GameManager.instance.colorUtil.getNext(), HexaServer.username, HexaServer.senderId));
         getSessionData().addNewPlayer(
                 GameManager.instance.GlobalMarketID,
                 "Market",
                 new Player(
                         new Color(0x00ff00),
-                        "Market"
+                        "Market",
+                        GameManager.instance.GlobalMarketID
+                )
+        );
+
+        ////////////////
+        // BOT PLAYER //
+        ////////////////
+
+        final String botName = "Bot " + Usernames.getRandom();
+        final UUID botUuid = UUID.randomUUID();
+        getSessionData().addNewPlayer(
+                botUuid,
+                botName,
+                new ComputerPlayer(
+                        GameManager.instance.colorUtil.getNext(),
+                        botName,
+                        botUuid
                 )
         );
 
